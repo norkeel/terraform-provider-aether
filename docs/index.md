@@ -31,6 +31,10 @@ An API token is not tied to the member who created it: removing that member, or 
 
 The `endpoint` attribute (or `AETHER_ENDPOINT`) selects the API. It defaults to production, `https://api.aetherplatform.cloud`; use `https://dev.api.aetherplatform.cloud` for the dev environment.
 
+## Service status
+
+Platform incidents and maintenance are published at https://status.aetherplatform.cloud. Check it before opening a support ticket when the API returns 5xx responses.
+
 ## State holds secrets
 
 The state stores the cluster kubeconfig, registry robot secrets, the registry's default robot credential and webhook signing secrets in plain text. Keep state in an encrypted backend with restricted access.

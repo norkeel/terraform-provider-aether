@@ -55,6 +55,10 @@ operation` (`403 token_not_permitted`), with the API message and request id in t
 The endpoint must be `https` (plain `http` is accepted only for a loopback host) because the
 token is sent on every request.
 
+## Service status
+
+Platform incidents and maintenance are published at https://status.aetherplatform.cloud. Check it before opening a support ticket when the API returns 5xx responses.
+
 ## ⚠ State contains secrets
 
 Terraform/OpenTofu state stores, in plain text: the cluster admin kubeconfig
