@@ -1,4 +1,7 @@
 version: 2
+# Release files must carry the provider's registry name, whatever the repository
+# is called: terraform-provider-norkeel_<version>_<os>_<arch>.zip.
+project_name: terraform-provider-norkeel
 before:
   hooks: [go mod tidy]
 builds:

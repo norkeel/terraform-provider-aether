@@ -19,7 +19,7 @@ func main() {
 	flag.Parse()
 
 	err := providerserver.Serve(context.Background(), provider.New(version), providerserver.ServeOpts{
-		Address: "registry.terraform.io/norkeel/norkeel",
+		Address: "registry.terraform.io/norkeel/" + provider.ProviderName,
 		Debug:   debug,
 	})
 	if err != nil {

@@ -62,6 +62,11 @@ type organizationMemberModel struct {
 }
 
 // Metadata names the resource norkeel_organization_member.
+// MoveState accepts state moved from the pre-rename aether_organization_member type.
+func (r *organizationMemberResource) MoveState(ctx context.Context) []resource.StateMover {
+	return moveStateFromLegacy(ctx, r, "organization_member")
+}
+
 func (r *organizationMemberResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_organization_member"
 }
@@ -70,7 +75,7 @@ func (r *organizationMemberResource) Metadata(_ context.Context, req resource.Me
 func (r *organizationMemberResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "A member of the provider's organization. " +
-			"The API creates the membership only. The address must already have an Norkeel login account (created through the portal invitation flow; aether-api #302), otherwise the member cannot sign in. Destroying the resource removes the membership and leaves the login account in place. " +
+			"The API creates the membership only. The address must already have a Norkeel login account (created through the portal invitation flow; aether-api #302), otherwise the member cannot sign in. Destroying the resource removes the membership and leaves the login account in place. " +
 			"There is no in-place update: changing `email` or `role` replaces the membership (it is removed, then created again with a new `id`). Do not set `create_before_destroy`: the new membership would be created while the old one still holds the address, which the API refuses (409). " +
 			"Member emails are compared case-insensitively: adding an address that differs from an existing member's only in letter case is refused (409). " +
 			"Removing or replacing the organization's last `owner` is refused, because nobody could change roles or delete the organization afterwards. The provider checks the member's current role before sending the removal, serialised within a single run; the API also refuses to remove the last owner (409 `last_owner`), which covers a concurrent removal in the portal or another run. " +

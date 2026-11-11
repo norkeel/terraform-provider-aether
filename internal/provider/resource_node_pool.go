@@ -114,6 +114,11 @@ var nodeTaintType = types.ObjectType{AttrTypes: map[string]attr.Type{
 }}
 
 // Metadata names the resource norkeel_node_pool.
+// MoveState accepts state moved from the pre-rename aether_node_pool type.
+func (r *nodePoolResource) MoveState(ctx context.Context) []resource.StateMover {
+	return moveStateFromLegacy(ctx, r, "node_pool")
+}
+
 func (r *nodePoolResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_node_pool"
 }
@@ -147,7 +152,7 @@ func keptKnobInt64(desc string, v validator.Int64) schema.Int64Attribute {
 // Schema defines norkeel_node_pool.
 func (r *nodePoolResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "A pool of identically sized worker nodes in an `norkeel_cluster`. " +
+		MarkdownDescription: "A pool of identically sized worker nodes in a `norkeel_cluster`. " +
 			"A pool is FIXED (billed as a flat monthly fee, `desired_nodes` nodes) unless its budget allows growth (a `max_vcpus` above `min_vcpus` or a `max_memory_gb` above `min_memory_gb`), which makes it AUTOSCALING (billed hourly per node, node count chosen by the autoscaler inside the budget). " +
 			"Creation waits until the pool is `running`. On update, only a node-count change on a fixed pool is waited for (until every desired node is ready); every other change returns once the API has accepted it, because the platform exposes no signal that it has been applied.",
 		Attributes: map[string]schema.Attribute{

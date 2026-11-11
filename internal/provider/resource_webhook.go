@@ -55,6 +55,11 @@ type webhookModel struct {
 }
 
 // Metadata names the resource norkeel_webhook.
+// MoveState accepts state moved from the pre-rename aether_webhook type.
+func (r *webhookResource) MoveState(ctx context.Context) []resource.StateMover {
+	return moveStateFromLegacy(ctx, r, "webhook")
+}
+
 func (r *webhookResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_webhook"
 }

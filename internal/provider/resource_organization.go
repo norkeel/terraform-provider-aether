@@ -53,6 +53,11 @@ type organizationModel struct {
 var slugPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$`)
 
 // Metadata names the resource norkeel_organization.
+// MoveState accepts state moved from the pre-rename aether_organization type.
+func (r *organizationResource) MoveState(ctx context.Context) []resource.StateMover {
+	return moveStateFromLegacy(ctx, r, "organization")
+}
+
 func (r *organizationResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_organization"
 }

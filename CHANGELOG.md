@@ -6,7 +6,7 @@ generated changelog is disabled (`.goreleaser.yml`).
 ## 0.2.0 (Unreleased)
 
 Aether is now Norkeel, and the provider is renamed with it. This is the first
-release under the new name; v0.1.0 remains available under the old address.
+release under the new name; v0.1.0 stays available under the old address.
 
 BREAKING CHANGES:
 
@@ -14,10 +14,12 @@ BREAKING CHANGES:
   `provider "norkeel"`. The old `plane-shift/aether` address gets no further
   releases.
 * provider: every resource and data source is renamed from `aether_*` to
-  `norkeel_*` (for example `norkeel_cluster` → `norkeel_cluster`).
+  `norkeel_*` (for example `aether_cluster` → `norkeel_cluster`).
 * provider: the environment variables are now `NORKEEL_API_TOKEN`,
   `NORKEEL_ENDPOINT` and `NORKEEL_ORGANIZATION_ID`. The `AETHER_*` names are no
   longer read.
+* provider: diagnostic summaries say `Norkeel API …` where they said
+  `Aether API …`.
 * Unchanged, because the platform still issues or serves them: the default
   endpoint `https://api.aetherplatform.cloud`, the `aether_` API token prefix,
   the `aether-<organization slug>` registry project, the `aether.cloud/` node
@@ -25,19 +27,32 @@ BREAKING CHANGES:
 
 UPGRADING FROM v0.1:
 
-1. Change `source` to `norkeel/norkeel`, the provider block to
-   `provider "norkeel"`, and every `aether_` type in your configuration to
-   `norkeel_`.
-2. Rename the environment variables.
-3. Point existing state at the new provider and types: run
-   `terraform state replace-provider plane-shift/aether norkeel/norkeel`, then
-   for each resource `terraform state rm aether_<type>.<name>` and
-   `terraform import norkeel_<type>.<name> <id>` (the import IDs are unchanged).
-   `terraform plan` should then show no changes.
+1. In your configuration, change `source` to `norkeel/norkeel`, the provider
+   block to `provider "norkeel"`, every `aether_` type to `norkeel_`, and rename
+   the environment variables. Run `terraform init`.
+2. Add one `moved` block per resource (Terraform 1.8+), for example:
 
+   ```hcl
+   moved {
+     from = aether_cluster.prod
+     to   = norkeel_cluster.prod
+   }
+   ```
 
-The Norkeel API now enforces organization roles on every request. No resource,
-data source or attribute changes; the provider keeps calling the same routes.
+   Every resource accepts a move from its `aether_` type, keeping its state as
+   is: robot account and webhook secrets are preserved and nothing is replaced.
+   `terraform plan` should show only the moves.
+3. On an engine without cross-type moves, remove the old addresses
+   (`terraform state list | grep -E '(^|\.)aether_' | xargs -n1 terraform state rm`)
+   and import each resource under its new type with an `import` block (same
+   IDs). Imports do not restore `norkeel_registry_robot_account.secret` or
+   `norkeel_webhook.secret`, so anything that reads them must be updated, and a
+   `rotate_secret` already in the configuration will rotate the webhook's
+   signing secret on the next apply.
+
+Also in this release, carried over from the unreleased 0.1.1: the Norkeel API
+now enforces organization roles on every request. No resource, data source or
+attribute changes for that; the provider keeps calling the same routes.
 
 ENHANCEMENTS:
 

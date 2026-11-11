@@ -53,6 +53,11 @@ type registryModel struct {
 }
 
 // Metadata names the resource norkeel_registry.
+// MoveState accepts state moved from the pre-rename aether_registry type.
+func (r *registryResource) MoveState(ctx context.Context) []resource.StateMover {
+	return moveStateFromLegacy(ctx, r, "registry")
+}
+
 func (r *registryResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_registry"
 }
@@ -144,7 +149,7 @@ func (r *registryResource) Create(ctx context.Context, req resource.CreateReques
 		if !enabled {
 			resp.Diagnostics.AddError("Registry cannot be enabled",
 				"The platform reports the registry as disabled but Harbor already holds its robot (`org-<organization slug>`), so every enable is refused with 409 `robot_exists` (aether-api#312). "+
-					"Either a previous disable could not delete that robot, or a robot account with that name was created. Delete the robot (an `norkeel_registry_robot_account` named `org-<slug>`, or in Harbor) and apply again.")
+					"Either a previous disable could not delete that robot, or a robot account with that name was created. Delete the robot (a `norkeel_registry_robot_account` named `org-<slug>`, or in Harbor) and apply again.")
 			return
 		}
 		// Adopt: the credential was minted by someone else's enable call and

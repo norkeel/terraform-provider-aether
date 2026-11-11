@@ -3,12 +3,12 @@
 page_title: "norkeel_node_pool Resource - norkeel"
 subcategory: ""
 description: |-
-  A pool of identically sized worker nodes in an norkeel_cluster. A pool is FIXED (billed as a flat monthly fee, desired_nodes nodes) unless its budget allows growth (a max_vcpus above min_vcpus or a max_memory_gb above min_memory_gb), which makes it AUTOSCALING (billed hourly per node, node count chosen by the autoscaler inside the budget). Creation waits until the pool is running. On update, only a node-count change on a fixed pool is waited for (until every desired node is ready); every other change returns once the API has accepted it, because the platform exposes no signal that it has been applied.
+  A pool of identically sized worker nodes in a norkeel_cluster. A pool is FIXED (billed as a flat monthly fee, desired_nodes nodes) unless its budget allows growth (a max_vcpus above min_vcpus or a max_memory_gb above min_memory_gb), which makes it AUTOSCALING (billed hourly per node, node count chosen by the autoscaler inside the budget). Creation waits until the pool is running. On update, only a node-count change on a fixed pool is waited for (until every desired node is ready); every other change returns once the API has accepted it, because the platform exposes no signal that it has been applied.
 ---
 
 # norkeel_node_pool (Resource)
 
-A pool of identically sized worker nodes in an `norkeel_cluster`. A pool is FIXED (billed as a flat monthly fee, `desired_nodes` nodes) unless its budget allows growth (a `max_vcpus` above `min_vcpus` or a `max_memory_gb` above `min_memory_gb`), which makes it AUTOSCALING (billed hourly per node, node count chosen by the autoscaler inside the budget). Creation waits until the pool is `running`. On update, only a node-count change on a fixed pool is waited for (until every desired node is ready); every other change returns once the API has accepted it, because the platform exposes no signal that it has been applied.
+A pool of identically sized worker nodes in a `norkeel_cluster`. A pool is FIXED (billed as a flat monthly fee, `desired_nodes` nodes) unless its budget allows growth (a `max_vcpus` above `min_vcpus` or a `max_memory_gb` above `min_memory_gb`), which makes it AUTOSCALING (billed hourly per node, node count chosen by the autoscaler inside the budget). Creation waits until the pool is `running`. On update, only a node-count change on a fixed pool is waited for (until every desired node is ready); every other change returns once the API has accepted it, because the platform exposes no signal that it has been applied.
 
 ## Example Usage
 

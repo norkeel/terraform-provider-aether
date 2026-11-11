@@ -72,6 +72,11 @@ type clusterModel struct {
 }
 
 // Metadata names the resource norkeel_cluster.
+// MoveState accepts state moved from the pre-rename aether_cluster type.
+func (r *clusterResource) MoveState(ctx context.Context) []resource.StateMover {
+	return moveStateFromLegacy(ctx, r, "cluster")
+}
+
 func (r *clusterResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_cluster"
 }

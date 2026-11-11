@@ -74,6 +74,11 @@ var rateLimitAttrTypes = map[string]attr.Type{
 }
 
 // Metadata names the resource norkeel_cluster_network.
+// MoveState accepts state moved from the pre-rename aether_cluster_network type.
+func (r *clusterNetworkResource) MoveState(ctx context.Context) []resource.StateMover {
+	return moveStateFromLegacy(ctx, r, "cluster_network")
+}
+
 func (r *clusterNetworkResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_cluster_network"
 }
@@ -89,7 +94,7 @@ func rateLimitInt64(desc string) schema.Int64Attribute {
 // Schema defines norkeel_cluster_network.
 func (r *clusterNetworkResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "The network policy of an `norkeel_cluster`: which source addresses may reach its public control-plane endpoint, and the API-server connection rate limit. There is exactly one policy per cluster. " +
+		MarkdownDescription: "The network policy of a `norkeel_cluster`: which source addresses may reach its public control-plane endpoint, and the API-server connection rate limit. There is exactly one policy per cluster. " +
 			"Creating this resource OVERWRITES whatever policy the cluster has (for example one set in the portal) with the configuration; import to adopt an existing policy instead. " +
 			"Destroying this resource OPENS the cluster's public endpoint to any source address and resets the API-server rate limit to the platform default. " +
 			"The platform applies the policy asynchronously; this resource never waits for enforcement. " +
@@ -146,7 +151,7 @@ func (canonicalUUIDValidator) ValidateString(_ context.Context, req validator.St
 	s := req.ConfigValue.ValueString()
 	if u, err := parseID(s); err != nil || u.String() != s {
 		resp.Diagnostics.AddAttributeError(req.Path, "Invalid cluster_id",
-			fmt.Sprintf("%q must be a canonical lower-case UUID (36 characters, lower-case hex and hyphens, e.g. the `id` of an `norkeel_cluster`).", s))
+			fmt.Sprintf("%q must be a canonical lower-case UUID (36 characters, lower-case hex and hyphens, e.g. the `id` of a `norkeel_cluster`).", s))
 	}
 }
 

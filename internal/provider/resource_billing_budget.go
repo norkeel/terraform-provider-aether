@@ -56,6 +56,11 @@ type billingBudgetModel struct {
 }
 
 // Metadata names the resource norkeel_billing_budget.
+// MoveState accepts state moved from the pre-rename aether_billing_budget type.
+func (r *billingBudgetResource) MoveState(ctx context.Context) []resource.StateMover {
+	return moveStateFromLegacy(ctx, r, "billing_budget")
+}
+
 func (r *billingBudgetResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_billing_budget"
 }

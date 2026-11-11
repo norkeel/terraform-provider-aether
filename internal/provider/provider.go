@@ -60,7 +60,7 @@ func New(version string) func() provider.Provider {
 }
 
 func (p *norkeelProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {
-	resp.TypeName = "norkeel"
+	resp.TypeName = ProviderName
 	resp.Version = p.version
 }
 
