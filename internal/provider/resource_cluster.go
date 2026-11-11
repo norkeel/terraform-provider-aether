@@ -19,10 +19,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/versions"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/wait"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/versions"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/wait"
 )
 
 // Default operation timeouts, overridable per resource through the `timeouts`
@@ -41,14 +41,14 @@ var (
 	_ resource.ResourceWithModifyPlan  = &clusterResource{}
 )
 
-// NewClusterResource returns the aether_cluster resource.
+// NewClusterResource returns the norkeel_cluster resource.
 func NewClusterResource() resource.Resource { return &clusterResource{} }
 
 // clusterResource manages one cluster (control plane) of the provider's
 // organization. Node pools are separate resources.
 type clusterResource struct{ pd *providerData }
 
-// clusterModel is the aether_cluster state; tfsdk tags are the attribute names.
+// clusterModel is the norkeel_cluster state; tfsdk tags are the attribute names.
 type clusterModel struct {
 	ID                        types.String             `tfsdk:"id"`
 	Name                      types.String             `tfsdk:"name"`
@@ -71,7 +71,12 @@ type clusterModel struct {
 	Timeouts                  timeouts.Value           `tfsdk:"timeouts"`
 }
 
-// Metadata names the resource aether_cluster.
+// MoveState accepts state moved from the pre-rename aether_* type.
+func (r *clusterResource) MoveState(ctx context.Context) []resource.StateMover {
+	return moveStateFromLegacy(ctx, r)
+}
+
+// Metadata names the resource norkeel_cluster.
 func (r *clusterResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_cluster"
 }
@@ -96,16 +101,16 @@ func observedComputed(desc string) schema.StringAttribute {
 	return schema.StringAttribute{Computed: true, MarkdownDescription: desc}
 }
 
-// Schema defines aether_cluster.
+// Schema defines norkeel_cluster.
 func (r *clusterResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "A managed Kubernetes cluster (control plane). Node pools are separate `aether_node_pool` resources. Creation waits until the cluster is `running` (or `degraded`, reported as a warning); a `k8s_version` change performs an in-place upgrade through the upgrade endpoint and must move forward.",
+		MarkdownDescription: "A managed Kubernetes cluster (control plane). Node pools are separate `norkeel_node_pool` resources. Creation waits until the cluster is `running` (or `degraded`, reported as a warning); a `k8s_version` change performs an in-place upgrade through the upgrade endpoint and must move forward.",
 		Attributes: map[string]schema.Attribute{
 			"id": immutableComputed("Cluster UUID."),
 			"name": schema.StringAttribute{Required: true,
 				MarkdownDescription: "Cluster name. Changing it renames the cluster in place. The organization slug plus the name may not exceed 22 characters (the API answers 422 otherwise)."},
 			"region": schema.StringAttribute{Required: true,
-				MarkdownDescription: "Region id from `data.aether_regions` (e.g. `eu-fi`). Changing it replaces the cluster.",
+				MarkdownDescription: "Region id from `data.norkeel_regions` (e.g. `eu-fi`). Changing it replaces the cluster.",
 				PlanModifiers:       []planmodifier.String{stringplanmodifier.RequiresReplace()}},
 			"k8s_version": schema.StringAttribute{Required: true, CustomType: versions.K8sVersionType{},
 				MarkdownDescription: "`MAJOR.MINOR` (the platform resolves it to the latest offered patch) or an explicit `MAJOR.MINOR.PATCH` of an offered minor. A bare `1.37` is treated as equal to whichever `1.37.x` the platform resolved it to, so the resolved patch never shows as drift. " +
@@ -231,7 +236,7 @@ func (r *clusterResource) ModifyPlan(ctx context.Context, req resource.ModifyPla
 	}
 	if !fwd {
 		resp.Diagnostics.AddAttributeError(path.Root("k8s_version"), "Kubernetes downgrade is not supported",
-			fmt.Sprintf("k8s_version would move backwards from %s to %s. Aether only upgrades clusters in place. To run an older version the cluster must be destroyed and created again: "+
+			fmt.Sprintf("k8s_version would move backwards from %s to %s. Norkeel only upgrades clusters in place. To run an older version the cluster must be destroyed and created again: "+
 				"`terraform destroy -target=<this resource address>` (or `terraform taint <this resource address>`), then `terraform apply`.", from, to))
 	}
 }
@@ -293,7 +298,7 @@ func (r *clusterResource) Create(ctx context.Context, req resource.CreateRequest
 	// at all, which is the recoverable outcome.
 	created := res.JSON202
 	if created == nil {
-		resp.Diagnostics.AddError("Aether API accepted the cluster but returned no usable body",
+		resp.Diagnostics.AddError("Norkeel API accepted the cluster but returned no usable body",
 			describeNonJSON(res.HTTPResponse, res.Status())+". The cluster may exist; check the portal before retrying, since a retry creates a second one.")
 		return
 	}

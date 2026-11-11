@@ -15,16 +15,16 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
-// These tests drive aether_node_pool through a real terraform (or tofu) binary
+// These tests drive norkeel_node_pool through a real terraform (or tofu) binary
 // against the in-process fake, which reproduces what aether-api DOES (see
 // fakeapi/nodepools.go). Every config carries SHORT timeouts so a regression
 // that never converges fails in seconds, not after the 30 m default.
 
 const (
-	poolResource = "aether_node_pool.p"
+	poolResource = "norkeel_node_pool.p"
 	poolsRE      = `/nodepools$`
 	onePoolRE    = `/nodepools/[^/]+$`
 	shortTimeout = `timeouts = { create = "20s", update = "20s", delete = "20s" }`
@@ -72,7 +72,7 @@ func seedJSON(t *testing.T, api *fakeapi.Server, path, body string) string {
 	return out.ID
 }
 
-// poolBlock renders one aether_node_pool resource; extra lines go inside the
+// poolBlock renders one norkeel_node_pool resource; extra lines go inside the
 // block. Short timeouts are added unless the extras carry their own, in
 // which case any PHASE the caller left unmentioned is filled in short too
 // (M-14): a caller overriding only `create`, say, must not silently fall
@@ -82,7 +82,7 @@ func seedJSON(t *testing.T, api *fakeapi.Server, path, body string) string {
 func poolBlock(res, clusterID, name string, vcpus, mem, disk int, extra ...string) string {
 	body := strings.Join(withDefaultPoolTimeouts(extra), "\n")
 	return fmt.Sprintf(`
-resource "aether_node_pool" %q {
+resource "norkeel_node_pool" %q {
   cluster_id = %q
   name       = %q
   vcpus      = %d
@@ -125,7 +125,7 @@ func withDefaultPoolTimeouts(extra []string) []string {
 }
 
 func poolHCL(clusterID, name string, extra ...string) string {
-	return `provider "aether" {}` + poolBlock("p", clusterID, name, 2, 4, 20, extra...)
+	return `provider "norkeel" {}` + poolBlock("p", clusterID, name, 2, 4, 20, extra...)
 }
 
 func keysOf(m map[string]any) []string {
@@ -826,7 +826,7 @@ func TestNodePoolResource_NameSizeLabelsTaintsAndClusterChangesEachReplaceAndNev
 			api := setupFake(t)
 			clusters := map[string]string{"A": seedCluster(t, api, "a"), "B": seedCluster(t, api, "b")}
 			render := func(v variant) string {
-				return `provider "aether" {}` + poolBlock("p", clusters[v.cluster], v.name, v.vcpus, v.mem, v.disk, v.extra...)
+				return `provider "norkeel" {}` + poolBlock("p", clusters[v.cluster], v.name, v.vcpus, v.mem, v.disk, v.extra...)
 			}
 			resource.UnitTest(t, resource.TestCase{
 				IsUnitTest:               true,
@@ -1055,9 +1055,9 @@ func TestNodePoolResource_TaintWithoutValueReadsBackEmptyAndPlansEmpty(t *testin
 	api := setupFake(t)
 	cid := seedCluster(t, api, "c")
 	// NoSchedule needs another schedulable pool in the cluster (400 no_schedulable_pool)
-	cfg := `provider "aether" {}` +
+	cfg := `provider "norkeel" {}` +
 		poolBlock("base", cid, "base", 2, 4, 20) +
-		poolBlock("p", cid, "tainted", 2, 4, 20, `depends_on = [aether_node_pool.base]`,
+		poolBlock("p", cid, "tainted", 2, 4, 20, `depends_on = [norkeel_node_pool.base]`,
 			`node_taints = [{ key = "dedicated", effect = "NoSchedule" }]`)
 	resource.UnitTest(t, resource.TestCase{
 		IsUnitTest:               true,
@@ -1127,7 +1127,7 @@ func TestNodePoolResource_ExplicitEmptyLabelsStayEmptyAndPlanEmpty(t *testing.T)
 // taints. Fixed here by seeding the pool OUT OF BAND (never applied by this
 // test run, so the address is never "already managed") and using
 // ImportStatePersist: true for real: the import is the FIRST thing that
-// writes aether_node_pool.p into this test's actual state, so the null prior
+// writes norkeel_node_pool.p into this test's actual state, so the null prior
 // step 3 plans against is genuinely the one the import produced. There is no
 // prior terraform-managed state to compare against, so ImportStateVerify
 // (which requires one) is replaced by ImportStateCheck, asserting the same

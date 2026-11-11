@@ -21,7 +21,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
 )
 
 // Default operation timeouts, overridable through the `timeouts` attribute.
@@ -40,7 +40,7 @@ var (
 	_ resource.ResourceWithImportState = &clusterNetworkResource{}
 )
 
-// NewClusterNetworkResource returns the aether_cluster_network resource.
+// NewClusterNetworkResource returns the norkeel_cluster_network resource.
 func NewClusterNetworkResource() resource.Resource { return &clusterNetworkResource{} }
 
 // clusterNetworkResource manages the network policy (control-plane source-IP
@@ -49,7 +49,7 @@ func NewClusterNetworkResource() resource.Resource { return &clusterNetworkResou
 // never-configured cluster reads as an empty list, and there is no DELETE.
 type clusterNetworkResource struct{ pd *providerData }
 
-// clusterNetworkModel is the aether_cluster_network state; tfsdk tags are the
+// clusterNetworkModel is the norkeel_cluster_network state; tfsdk tags are the
 // attribute names.
 type clusterNetworkModel struct {
 	ID                 types.String   `tfsdk:"id"`
@@ -73,7 +73,12 @@ var rateLimitAttrTypes = map[string]attr.Type{
 	"burst":                      types.Int64Type,
 }
 
-// Metadata names the resource aether_cluster_network.
+// MoveState accepts state moved from the pre-rename aether_* type.
+func (r *clusterNetworkResource) MoveState(ctx context.Context) []resource.StateMover {
+	return moveStateFromLegacy(ctx, r)
+}
+
+// Metadata names the resource norkeel_cluster_network.
 func (r *clusterNetworkResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_cluster_network"
 }
@@ -86,10 +91,10 @@ func rateLimitInt64(desc string) schema.Int64Attribute {
 		Validators: []validator.Int64{int64validator.Between(1, math.MaxInt32)}}
 }
 
-// Schema defines aether_cluster_network.
+// Schema defines norkeel_cluster_network.
 func (r *clusterNetworkResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "The network policy of an `aether_cluster`: which source addresses may reach its public control-plane endpoint, and the API-server connection rate limit. There is exactly one policy per cluster. " +
+		MarkdownDescription: "The network policy of a `norkeel_cluster`: which source addresses may reach its public control-plane endpoint, and the API-server connection rate limit. There is exactly one policy per cluster. " +
 			"Creating this resource OVERWRITES whatever policy the cluster has (for example one set in the portal) with the configuration; import to adopt an existing policy instead. " +
 			"Destroying this resource OPENS the cluster's public endpoint to any source address and resets the API-server rate limit to the platform default. " +
 			"The platform applies the policy asynchronously; this resource never waits for enforcement. " +
@@ -97,7 +102,7 @@ func (r *clusterNetworkResource) Schema(ctx context.Context, _ resource.SchemaRe
 		Attributes: map[string]schema.Attribute{
 			"id": immutableComputed("Same as `cluster_id` (the policy has no id of its own)."),
 			"cluster_id": schema.StringAttribute{Required: true,
-				MarkdownDescription: "UUID of the `aether_cluster` the policy belongs to. Changing it replaces the resource, which first OPENS the old cluster's endpoint (see the resource description).",
+				MarkdownDescription: "UUID of the `norkeel_cluster` the policy belongs to. Changing it replaces the resource, which first OPENS the old cluster's endpoint (see the resource description).",
 				PlanModifiers:       []planmodifier.String{stringplanmodifier.RequiresReplace()},
 				Validators:          []validator.String{canonicalUUIDValidator{}}},
 			// A List, not a Set: the API stores and echoes the entries verbatim
@@ -146,7 +151,7 @@ func (canonicalUUIDValidator) ValidateString(_ context.Context, req validator.St
 	s := req.ConfigValue.ValueString()
 	if u, err := parseID(s); err != nil || u.String() != s {
 		resp.Diagnostics.AddAttributeError(req.Path, "Invalid cluster_id",
-			fmt.Sprintf("%q must be a canonical lower-case UUID (36 characters, lower-case hex and hyphens, e.g. the `id` of an `aether_cluster`).", s))
+			fmt.Sprintf("%q must be a canonical lower-case UUID (36 characters, lower-case hex and hyphens, e.g. the `id` of a `norkeel_cluster`).", s))
 	}
 }
 
@@ -289,7 +294,7 @@ func (r *clusterNetworkResource) Read(ctx context.Context, req resource.ReadRequ
 		addAPIError(&resp.Diagnostics, g.StatusCode(), g.HTTPResponse.Header, g.Body, path.Empty())
 		return
 	case g.JSON200 == nil:
-		resp.Diagnostics.AddError("Aether API returned no usable cluster network policy", describeNonJSON(g.HTTPResponse, g.Status()))
+		resp.Diagnostics.AddError("Norkeel API returned no usable cluster network policy", describeNonJSON(g.HTTPResponse, g.Status()))
 		return
 	}
 	resp.Diagnostics.Append(flattenClusterNetwork(ctx, g.JSON200, &state)...)
@@ -431,7 +436,7 @@ func (r *clusterNetworkResource) put(ctx context.Context, m *clusterNetworkModel
 		if !creating {
 			advice = " The policy was probably written, but state still holds the previous policy: apply again (the PUT is idempotent)."
 		}
-		diags.AddError("Aether API accepted the cluster network policy but returned no usable body",
+		diags.AddError("Norkeel API accepted the cluster network policy but returned no usable body",
 			describeNonJSON(res.HTTPResponse, res.Status())+"."+advice)
 		return diags
 	}

@@ -11,10 +11,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
-// These tests drive aether_registry_robot_account
+// These tests drive norkeel_registry_robot_account
 // (internal/provider/resource_registry_robot_account.go, registered in
 // provider.go's Resources() as NewRegistryRobotAccountResource) through a
 // real terraform (or tofu) binary against the in-process fake
@@ -27,7 +27,7 @@ import (
 // says what a WRONG implementation would still get caught on.
 
 const (
-	robotAccountResource = "aether_registry_robot_account.b"
+	robotAccountResource = "norkeel_registry_robot_account.b"
 	robotsListRE         = `/registry/robot-accounts$`
 	robotOneRE           = `/registry/robot-accounts/[^/]+$`
 )
@@ -40,8 +40,8 @@ func robotAccountHCL(name string, permissions []string, extra ...string) string 
 		quoted[i] = fmt.Sprintf("%q", p)
 	}
 	return fmt.Sprintf(`
-provider "aether" {}
-resource "aether_registry_robot_account" "b" {
+provider "norkeel" {}
+resource "norkeel_registry_robot_account" "b" {
   name        = %q
   permissions = [%s]
 %s
@@ -454,7 +454,7 @@ func TestRobotAccountResource_ImportOfTheDefaultRobotErrors(t *testing.T) {
 			ImportState:   true,
 			Config:        robotAccountHCL("org-acme", []string{"repository:push", "repository:pull", "repository:delete"}),
 			ImportStateId: robotID,
-			ExpectError:   loose("belongs to aether_registry and cannot be managed here"),
+			ExpectError:   loose("belongs to norkeel_registry and cannot be managed here"),
 		}},
 	})
 }

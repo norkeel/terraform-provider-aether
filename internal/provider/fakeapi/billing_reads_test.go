@@ -158,7 +158,7 @@ func TestInvoicesListPdfURLNeverPresentBuyerIssuerOnlyWhenSeeded(t *testing.T) {
 	s.SeedInvoice(testOrg, InvoiceSeed{
 		PeriodStart: time.Date(2026, 9, 1, 0, 0, 0, 0, time.UTC), PeriodEnd: time.Date(2026, 10, 1, 0, 0, 0, 0, time.UTC),
 		SubtotalCents: 2000, TaxCents: 380, TotalCents: 2380, TaxRateBP: 1900, TaxNote: "VAT 19%", Status: "paid",
-		Issuer: map[string]any{"legal_name": "Aether SRL"},
+		Issuer: map[string]any{"legal_name": "Norkeel SRL"},
 		Buyer:  map[string]any{"billing_email": "buyer@example.com"},
 	})
 	_, b := call(t, s, http.MethodGet, invoicesPath, "")
@@ -189,7 +189,7 @@ func TestInvoicesListPdfURLNeverPresentBuyerIssuerOnlyWhenSeeded(t *testing.T) {
 		t.Fatalf("unseeded invoice carries buyer = %v, want OMITTED", bare["buyer"])
 	}
 	issuer, ok := full["issuer"].(map[string]any)
-	if !ok || issuer["legal_name"] != "Aether SRL" {
+	if !ok || issuer["legal_name"] != "Norkeel SRL" {
 		t.Fatalf("seeded invoice issuer = %v, want the seeded object", full["issuer"])
 	}
 	buyer, ok := full["buyer"].(map[string]any)
@@ -262,7 +262,7 @@ func TestInvoicesListPage2CursorIsWrong(t *testing.T) {
 // SetRepeatingInvoiceCursor (ruling T14-15 support): the forced cursor is
 // served as next_cursor even though the seeded list is a single invoice and
 // would naturally end there - the "always answers the same next_cursor" fake
-// behaviour a provider-level test uses to prove aether_invoices' collectAll
+// behaviour a provider-level test uses to prove norkeel_invoices' collectAll
 // pager fails loud on a repeated cursor instead of looping or truncating.
 func TestInvoicesListRepeatingCursorOverridesNaturalEnd(t *testing.T) {
 	s := newClusterFake(t)

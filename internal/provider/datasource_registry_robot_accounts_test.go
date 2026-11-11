@@ -1,6 +1,6 @@
 package provider_test
 
-// Tests for the aether_registry_robot_accounts data source
+// Tests for the norkeel_registry_robot_accounts data source
 // (datasource_registry_robot_accounts.go, T14-6, registered as
 // NewRegistryRobotAccountsDataSource in provider.go's DataSources()): the
 // raw-decoded harbor_username, permissions exposed as a Set, and secret/
@@ -12,11 +12,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-const robotAccountsDataSource = "data.aether_registry_robot_accounts.r"
+const robotAccountsDataSource = "data.norkeel_registry_robot_accounts.r"
 
 const robotAccountsDSHCL = `
-provider "aether" {}
-data "aether_registry_robot_accounts" "r" {}
+provider "norkeel" {}
+data "norkeel_registry_robot_accounts" "r" {}
 `
 
 // RB1. Fails if id/name/permissions/harbor_id/harbor_username/created_at/

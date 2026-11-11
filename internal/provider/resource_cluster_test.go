@@ -15,17 +15,17 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
-// These tests drive the aether_cluster resource through a real terraform (or
+// These tests drive the norkeel_cluster resource through a real terraform (or
 // tofu) binary against the in-process fake. resource.UnitTest + IsUnitTest
 // means TF_ACC is not required.
 
 func factories() map[string]func() (tfprotov6.ProviderServer, error) {
 	return map[string]func() (tfprotov6.ProviderServer, error){
-		"aether": providerserver.NewProtocol6WithError(provider.New("test")()),
+		"norkeel": providerserver.NewProtocol6WithError(provider.New("test")()),
 	}
 }
 
@@ -35,19 +35,19 @@ func setupFake(t *testing.T) *fakeapi.Server {
 	t.Helper()
 	api := fakeapi.New(t)
 	api.AddOrg(testOrg, "Acme", "acme")
-	t.Setenv("AETHER_ENDPOINT", api.URL())
-	t.Setenv("AETHER_API_TOKEN", api.Token())
+	t.Setenv("NORKEEL_ENDPOINT", api.URL())
+	t.Setenv("NORKEEL_API_TOKEN", api.Token())
 	// A developer's exported value would switch Configure onto the explicit-org
 	// path, which is not what these tests exercise.
-	t.Setenv("AETHER_ORGANIZATION_ID", "")
+	t.Setenv("NORKEEL_ORGANIZATION_ID", "")
 	return api
 }
 
 // clusterHCL renders the cluster under test; extra lines go inside the block.
 func clusterHCL(name, region, version string, extra ...string) string {
 	return fmt.Sprintf(`
-provider "aether" {}
-resource "aether_cluster" "c" {
+provider "norkeel" {}
+resource "norkeel_cluster" "c" {
   name        = %q
   region      = %q
   k8s_version = %q
@@ -94,7 +94,7 @@ const (
 	oneClusterRE    = `/clusters/[^/]+$`
 	upgradeRE       = `/clusters/[^/]+/upgrade$`
 	zeroUUID        = "00000000-0000-0000-0000-000000000000"
-	clusterResource = "aether_cluster.c"
+	clusterResource = "norkeel_cluster.c"
 )
 
 func TestClusterResource_CreateWaitsForRunningAndTolerates137vs1370(t *testing.T) {

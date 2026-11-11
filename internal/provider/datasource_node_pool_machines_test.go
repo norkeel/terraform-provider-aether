@@ -6,20 +6,20 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
 // Expected coder symbol: NewNodePoolMachinesDataSource (datasource_node_pool_machines.go).
 
 func machinesDataSourceHCL(clusterID, poolID string) string {
-	return dsProviderBlock + `data "aether_node_pool_machines" "m" {
+	return dsProviderBlock + `data "norkeel_node_pool_machines" "m" {
   cluster_id   = "` + clusterID + `"
   node_pool_id = "` + poolID + `"
 }`
 }
 
 // M1. Fails today (RED) with "does not support data source
-// \"aether_node_pool_machines\"". Once implemented, fails against a wrong
+// \"norkeel_node_pool_machines\"". Once implemented, fails against a wrong
 // implementation if any of the six fields is dropped/mistyped, or if the
 // order the fake sorts by (name) isn't preserved through to state.
 func TestDataSourceNodePoolMachines_AllFields(t *testing.T) {
@@ -36,15 +36,15 @@ func TestDataSourceNodePoolMachines_AllFields(t *testing.T) {
 		Steps: []resource.TestStep{{
 			Config: machinesDataSourceHCL(cid, pid),
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_node_pool_machines.m", "machines.#", "2"),
-				resource.TestCheckResourceAttr("data.aether_node_pool_machines.m", "machines.0.name", "worker-1"),
-				resource.TestCheckResourceAttr("data.aether_node_pool_machines.m", "machines.0.status", "Ready"),
-				resource.TestCheckResourceAttr("data.aether_node_pool_machines.m", "machines.0.k8s_version", "v1.37.2"),
-				resource.TestCheckResourceAttr("data.aether_node_pool_machines.m", "machines.0.internal_ip", "10.64.1.1"),
-				resource.TestCheckResourceAttr("data.aether_node_pool_machines.m", "machines.0.age_seconds", "7200"),
-				resource.TestCheckResourceAttr("data.aether_node_pool_machines.m", "machines.0.created_at", "2026-09-20T00:00:00Z"),
-				resource.TestCheckResourceAttr("data.aether_node_pool_machines.m", "machines.1.name", "worker-2"),
-				resource.TestCheckResourceAttr("data.aether_node_pool_machines.m", "machines.1.status", "NotReady"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool_machines.m", "machines.#", "2"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool_machines.m", "machines.0.name", "worker-1"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool_machines.m", "machines.0.status", "Ready"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool_machines.m", "machines.0.k8s_version", "v1.37.2"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool_machines.m", "machines.0.internal_ip", "10.64.1.1"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool_machines.m", "machines.0.age_seconds", "7200"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool_machines.m", "machines.0.created_at", "2026-09-20T00:00:00Z"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool_machines.m", "machines.1.name", "worker-2"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool_machines.m", "machines.1.status", "NotReady"),
 			),
 		}},
 	})
@@ -63,7 +63,7 @@ func TestDataSourceNodePoolMachines_UnavailableIsEmptyNotAnError(t *testing.T) {
 		ProtoV6ProviderFactories: factories(),
 		Steps: []resource.TestStep{{
 			Config: machinesDataSourceHCL(cid, pid),
-			Check:  resource.TestCheckResourceAttr("data.aether_node_pool_machines.m", "machines.#", "0"),
+			Check:  resource.TestCheckResourceAttr("data.norkeel_node_pool_machines.m", "machines.#", "0"),
 		}},
 	})
 }

@@ -1,6 +1,6 @@
 package provider_test
 
-// Tests for the aether_audit_log data source (datasource_audit_log.go, T14-8),
+// Tests for the norkeel_audit_log data source (datasource_audit_log.go, T14-8),
 // registered as NewAuditLogDataSource in provider.go's DataSources().
 
 import (
@@ -11,10 +11,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
-const auditLogDataSource = "data.aether_audit_log.a"
+const auditLogDataSource = "data.norkeel_audit_log.a"
 
 func auditLogHCL(extra ...string) string {
 	s := ""
@@ -22,8 +22,8 @@ func auditLogHCL(extra ...string) string {
 		s += "\n  " + e
 	}
 	return fmt.Sprintf(`
-provider "aether" {}
-data "aether_audit_log" "a" {%s
+provider "norkeel" {}
+data "norkeel_audit_log" "a" {%s
 }
 `, s)
 }

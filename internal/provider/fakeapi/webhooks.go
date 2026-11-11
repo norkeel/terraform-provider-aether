@@ -275,11 +275,11 @@ func (s *Server) FailNextWebhookRotate(org string, status int, code, message str
 	ws.failNextRotate[org] = &webhookFailure{status: status, code: code, message: message}
 }
 
-// SetRepeatingWebhookCursor forces the aether_webhooks list to report cursor
+// SetRepeatingWebhookCursor forces the norkeel_webhooks list to report cursor
 // as next_cursor on EVERY page for org, regardless of whether the page is
 // full - a fake server contract violation used to prove the data source's
 // collectAll pager (T14-2, the same pager family as
-// aether_organization_members) fails loud on a repeated cursor instead of
+// norkeel_organization_members) fails loud on a repeated cursor instead of
 // silently truncating the list (ruling T14-15, review r1 M-1). cursor must
 // be a UUID the caller controls (e.g. a SeedWebhook id), since
 // nextUUIDCursor parses next_cursor as one.

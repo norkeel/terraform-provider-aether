@@ -12,19 +12,19 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &usageDataSource{}
 
-// NewUsageDataSource is aether_usage (T14-9).
+// NewUsageDataSource is norkeel_usage (T14-9).
 func NewUsageDataSource() datasource.DataSource { return &usageDataSource{} }
 
 type usageDataSource struct{ pd *providerData }
 
 // subscriptionLineModel is one flat monthly charge; shared with
-// aether_cost_breakdown. Money is euros (Float64, T14-13).
+// norkeel_cost_breakdown. Money is euros (Float64, T14-13).
 type subscriptionLineModel struct {
 	Kind           types.String  `tfsdk:"kind"`
 	ClusterID      types.String  `tfsdk:"cluster_id"`
@@ -37,7 +37,7 @@ type subscriptionLineModel struct {
 
 // usageModel deliberately has no `items` (T14-9): the API's items are every
 // hourly usage record of the month, unaggregated and unbounded;
-// aether_cost_breakdown carries the aggregation.
+// norkeel_cost_breakdown carries the aggregation.
 type usageModel struct {
 	PeriodStart   types.String            `tfsdk:"period_start"`
 	PeriodEnd     types.String            `tfsdk:"period_end"`
@@ -46,7 +46,7 @@ type usageModel struct {
 }
 
 // subscriptionsAttribute is the `subscriptions` schema shared by
-// aether_usage and aether_cost_breakdown.
+// norkeel_usage and norkeel_cost_breakdown.
 func subscriptionsAttribute() schema.ListNestedAttribute {
 	return schema.ListNestedAttribute{Computed: true,
 		MarkdownDescription: "Flat monthly charges of the month (fixed pools, control plane, packages, public endpoints, load balancers).",
@@ -84,7 +84,7 @@ func (d *usageDataSource) Metadata(_ context.Context, req datasource.MetadataReq
 func (d *usageDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Month-to-date spend of the organization: the current UTC month only; the API offers no other period. " +
-			"Per-pool and storage usage lines are in `aether_cost_breakdown`.",
+			"Per-pool and storage usage lines are in `norkeel_cost_breakdown`.",
 		Attributes: map[string]schema.Attribute{
 			"period_start":  schema.StringAttribute{Computed: true, MarkdownDescription: "First instant of the current UTC month (RFC 3339)."},
 			"period_end":    schema.StringAttribute{Computed: true, MarkdownDescription: "First instant of the next UTC month (RFC 3339)."},
@@ -131,7 +131,7 @@ func (d *usageDataSource) Read(ctx context.Context, _ datasource.ReadRequest, re
 	var u usageWire
 	err = json.Unmarshal(body, &u)
 	if err != nil || u.PeriodStart == nil || u.PeriodEnd == nil || u.TotalEUR == nil || u.Subscriptions == nil {
-		resp.Diagnostics.AddError("Aether API returned no usable usage summary",
+		resp.Diagnostics.AddError("Norkeel API returned no usable usage summary",
 			describeUndecodable(hr, hr.Status, err, "period_start, period_end, total_eur or subscriptions"))
 		return
 	}

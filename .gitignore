@@ -2,4 +2,4 @@
 .worktrees/
 dist/
 *.test
-terraform-provider-aether
+terraform-provider-norkeel

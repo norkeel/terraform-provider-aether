@@ -27,9 +27,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/wait"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/wait"
 )
 
 // Default operation timeouts, overridable through the `timeouts` attribute.
@@ -64,14 +64,14 @@ var (
 	_ resource.ResourceWithModifyPlan  = &nodePoolResource{}
 )
 
-// NewNodePoolResource returns the aether_node_pool resource.
+// NewNodePoolResource returns the norkeel_node_pool resource.
 func NewNodePoolResource() resource.Resource { return &nodePoolResource{} }
 
 // nodePoolResource manages one node pool of a cluster in the provider's
 // organization.
 type nodePoolResource struct{ pd *providerData }
 
-// nodePoolModel is the aether_node_pool state; tfsdk tags are the attribute names.
+// nodePoolModel is the norkeel_node_pool state; tfsdk tags are the attribute names.
 type nodePoolModel struct {
 	ID                          types.String   `tfsdk:"id"`
 	ClusterID                   types.String   `tfsdk:"cluster_id"`
@@ -113,7 +113,12 @@ var nodeTaintType = types.ObjectType{AttrTypes: map[string]attr.Type{
 	"key": types.StringType, "value": types.StringType, "effect": types.StringType,
 }}
 
-// Metadata names the resource aether_node_pool.
+// MoveState accepts state moved from the pre-rename aether_* type.
+func (r *nodePoolResource) MoveState(ctx context.Context) []resource.StateMover {
+	return moveStateFromLegacy(ctx, r)
+}
+
+// Metadata names the resource norkeel_node_pool.
 func (r *nodePoolResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_node_pool"
 }
@@ -144,16 +149,16 @@ func keptKnobInt64(desc string, v validator.Int64) schema.Int64Attribute {
 		Validators:    []validator.Int64{v}}
 }
 
-// Schema defines aether_node_pool.
+// Schema defines norkeel_node_pool.
 func (r *nodePoolResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "A pool of identically sized worker nodes in an `aether_cluster`. " +
+		MarkdownDescription: "A pool of identically sized worker nodes in a `norkeel_cluster`. " +
 			"A pool is FIXED (billed as a flat monthly fee, `desired_nodes` nodes) unless its budget allows growth (a `max_vcpus` above `min_vcpus` or a `max_memory_gb` above `min_memory_gb`), which makes it AUTOSCALING (billed hourly per node, node count chosen by the autoscaler inside the budget). " +
 			"Creation waits until the pool is `running`. On update, only a node-count change on a fixed pool is waited for (until every desired node is ready); every other change returns once the API has accepted it, because the platform exposes no signal that it has been applied.",
 		Attributes: map[string]schema.Attribute{
 			"id": immutableComputed("Node pool UUID."),
 			"cluster_id": schema.StringAttribute{Required: true,
-				MarkdownDescription: "UUID of the `aether_cluster` the pool belongs to. Changing it replaces the pool.",
+				MarkdownDescription: "UUID of the `norkeel_cluster` the pool belongs to. Changing it replaces the pool.",
 				PlanModifiers:       []planmodifier.String{stringplanmodifier.RequiresReplace()}},
 			// The API renames in place, but the platform keys everything below
 			// the API on the name: a rename creates a new machine set and deletes
@@ -354,7 +359,7 @@ func (r *nodePoolResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 		return
 	}
 	resp.Diagnostics.AddAttributeError(path.Root("drain_timeout_seconds"), "drain_timeout_seconds cannot be removed",
-		fmt.Sprintf("drain_timeout_seconds is set to %d on this pool, and the Aether API has no way to clear it back to the platform default (currently 600 seconds). "+
+		fmt.Sprintf("drain_timeout_seconds is set to %d on this pool, and the Norkeel API has no way to clear it back to the platform default (currently 600 seconds). "+
 			"Keep an explicit value instead, or recreate the pool: taint it first - `terraform taint <this resource address>` (or `tofu taint <this resource address>`) - "+
 			"then apply with the attribute removed; a tainted object is planned with no prior state, so this refusal does not fire on that apply. "+
 			"`terraform apply -replace=<address>` and `lifecycle { replace_triggered_by = [...] }` do NOT work here: Terraform plans the forced replacement only after a first "+
@@ -444,7 +449,7 @@ func (r *nodePoolResource) Create(ctx context.Context, req resource.CreateReques
 	// really created. Failing here leaves no state entry at all.
 	created := res.JSON202
 	if created == nil {
-		resp.Diagnostics.AddError("Aether API accepted the node pool but returned no usable body",
+		resp.Diagnostics.AddError("Norkeel API accepted the node pool but returned no usable body",
 			describeNonJSON(res.HTTPResponse, res.Status())+". The pool may exist; check the portal before retrying, since a retry with the same name is refused while it exists.")
 		return
 	}

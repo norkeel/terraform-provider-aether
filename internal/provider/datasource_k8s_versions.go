@@ -9,13 +9,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &k8sVersionsDataSource{}
 
-// NewK8sVersionsDataSource returns data.aether_k8s_versions.
+// NewK8sVersionsDataSource returns data.norkeel_k8s_versions.
 func NewK8sVersionsDataSource() datasource.DataSource { return &k8sVersionsDataSource{} }
 
 type k8sVersionsDataSource struct{ pd *providerData }
@@ -43,7 +43,7 @@ func (d *k8sVersionsDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 			"versions": schema.ListNestedAttribute{Computed: true,
 				MarkdownDescription: "Offered minors in the API's order (newest first).",
 				NestedObject: schema.NestedAttributeObject{Attributes: map[string]schema.Attribute{
-					"version": schema.StringAttribute{Computed: true, MarkdownDescription: "`MAJOR.MINOR`, the value `aether_cluster.k8s_version` accepts."},
+					"version": schema.StringAttribute{Computed: true, MarkdownDescription: "`MAJOR.MINOR`, the value `norkeel_cluster.k8s_version` accepts."},
 					"label":   schema.StringAttribute{Computed: true, MarkdownDescription: "`Latest` on the newest offered minor, `Stable` on the others."},
 					"patch":   schema.StringAttribute{Computed: true, MarkdownDescription: "The `MAJOR.MINOR.PATCH` the platform resolves this minor to."},
 				}}},

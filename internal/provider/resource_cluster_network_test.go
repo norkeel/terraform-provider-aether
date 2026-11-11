@@ -15,10 +15,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
-// These tests drive aether_cluster_network through a real terraform (or tofu)
+// These tests drive norkeel_cluster_network through a real terraform (or tofu)
 // binary against the in-process fake, which reproduces what aether-api DOES
 // (see fakeapi/networks.go and the SDD task-8 measured contract).
 // internal/provider/resource_cluster_network.go landed in 333f06e, and the
@@ -32,11 +32,11 @@ import (
 // timeouts tuning.
 
 const (
-	networkResource = "aether_cluster_network.n"
+	networkResource = "norkeel_cluster_network.n"
 	networkRE       = `/network$`
 )
 
-// networkHCL renders one aether_cluster_network resource. cidrs is rendered
+// networkHCL renders one norkeel_cluster_network resource. cidrs is rendered
 // as an explicit HCL list (authorized_cidrs is Required, so every config
 // must set it - nil renders `[]`, never an omitted attribute). extra lines
 // (e.g. an api_server_rate_limit block) go inside the block.
@@ -46,8 +46,8 @@ func networkHCL(clusterID string, cidrs []string, extra ...string) string {
 		quoted[i] = strconv.Quote(c)
 	}
 	return fmt.Sprintf(`
-provider "aether" {}
-resource "aether_cluster_network" "n" {
+provider "norkeel" {}
+resource "norkeel_cluster_network" "n" {
   cluster_id       = %q
   authorized_cidrs = [%s]
 %s
@@ -660,7 +660,7 @@ func TestClusterNetworkResource_CreateSurfacesAPUTErrorAndLeavesNoState(t *testi
 			},
 			{
 				PreConfig: func() { delete(api.Handlers, putPath) },
-				Config:    `provider "aether" {}`,
+				Config:    `provider "norkeel" {}`,
 				PlanOnly:  true, ExpectNonEmptyPlan: false,
 			},
 		},

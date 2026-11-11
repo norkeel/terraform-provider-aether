@@ -15,8 +15,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var (
@@ -24,13 +24,13 @@ var (
 	_ datasource.DataSourceWithConfigValidators = &nodePoolDataSource{}
 )
 
-// NewNodePoolDataSource returns data.aether_node_pool.
+// NewNodePoolDataSource returns data.norkeel_node_pool.
 func NewNodePoolDataSource() datasource.DataSource { return &nodePoolDataSource{} }
 
 type nodePoolDataSource struct{ pd *providerData }
 
 // nodePoolDataModel is one node pool as the data sources expose it: every
-// aether_node_pool attribute except timeouts.
+// norkeel_node_pool attribute except timeouts.
 type nodePoolDataModel struct {
 	ID                          types.String `tfsdk:"id"`
 	ClusterID                   types.String `tfsdk:"cluster_id"`
@@ -83,7 +83,7 @@ func nodePoolData(ctx context.Context, p *client.NodePool) (nodePoolDataModel, d
 
 // nodePoolDataAttributes is the attribute set of one node pool. lookup makes
 // cluster_id Required and id/name the Optional inputs of
-// data.aether_node_pool; otherwise everything is Computed.
+// data.norkeel_node_pool; otherwise everything is Computed.
 func nodePoolDataAttributes(lookup bool) map[string]schema.Attribute {
 	str := func(desc string) schema.StringAttribute {
 		return schema.StringAttribute{Computed: true, MarkdownDescription: desc}

@@ -1,6 +1,6 @@
 package provider_test
 
-// Tests for the aether_registry_repository_tags data source
+// Tests for the norkeel_registry_repository_tags data source
 // (datasource_registry_repository_tags.go, T14-5, registered as
 // NewRegistryRepositoryTagsDataSource in provider.go's DataSources()):
 // raw-decoded vulnerability counts, nested repository path escaping, and the
@@ -17,19 +17,19 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
 func tagsHCL(repo string) string {
 	return fmt.Sprintf(`
-provider "aether" {}
-data "aether_registry_repository_tags" "t" {
+provider "norkeel" {}
+data "norkeel_registry_repository_tags" "t" {
   repository = %q
 }
 `, repo)
 }
 
-const tagsDataSource = "data.aether_registry_repository_tags.t"
+const tagsDataSource = "data.norkeel_registry_repository_tags.t"
 
 // TG1. Fails if any tag attribute is wrong: raw-decoded vulnerabilities
 // (including low/unknown, which CG's VulnSummary drops), a null

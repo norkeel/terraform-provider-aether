@@ -9,12 +9,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &nodePoolsDataSource{}
 
-// NewNodePoolsDataSource returns data.aether_node_pools.
+// NewNodePoolsDataSource returns data.norkeel_node_pools.
 func NewNodePoolsDataSource() datasource.DataSource { return &nodePoolsDataSource{} }
 
 type nodePoolsDataSource struct{ pd *providerData }
@@ -34,7 +34,7 @@ func (d *nodePoolsDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 		Attributes: map[string]schema.Attribute{
 			"cluster_id": schema.StringAttribute{Required: true, Validators: []validator.String{canonicalIDValidator{}}, MarkdownDescription: "UUID of the cluster."},
 			"node_pools": schema.ListNestedAttribute{Computed: true,
-				MarkdownDescription: "The pools, with the same attributes as `data.aether_node_pool`.",
+				MarkdownDescription: "The pools, with the same attributes as `data.norkeel_node_pool`.",
 				NestedObject:        schema.NestedAttributeObject{Attributes: nodePoolDataAttributes(false)}},
 		},
 	}

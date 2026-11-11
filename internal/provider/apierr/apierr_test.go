@@ -255,8 +255,8 @@ func TestToDiagnostics_Other401And403KeepTheGenericTokenHint(t *testing.T) {
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			d := oneDiag(t, c.status, http.Header{}, c.body)
-			if d.Summary() != "Aether API rejected the request" {
-				t.Fatalf("summary = %q, want the generic %q", d.Summary(), "Aether API rejected the request")
+			if d.Summary() != "Norkeel API rejected the request" {
+				t.Fatalf("summary = %q, want the generic %q", d.Summary(), "Norkeel API rejected the request")
 			}
 			if !strings.Contains(d.Detail(), "api_token") {
 				t.Fatalf("detail = %q, want the api_token hint", d.Detail())

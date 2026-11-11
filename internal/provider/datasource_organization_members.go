@@ -10,13 +10,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &organizationMembersDataSource{}
 
-// NewOrganizationMembersDataSource is aether_organization_members (T14-1).
+// NewOrganizationMembersDataSource is norkeel_organization_members (T14-1).
 func NewOrganizationMembersDataSource() datasource.DataSource {
 	return &organizationMembersDataSource{}
 }
@@ -24,7 +24,7 @@ func NewOrganizationMembersDataSource() datasource.DataSource {
 type organizationMembersDataSource struct{ pd *providerData }
 
 type organizationMembersModel struct {
-	// The member attributes are exactly the aether_organization_member
+	// The member attributes are exactly the norkeel_organization_member
 	// resource's, so its model and flattenMember are reused.
 	Members []organizationMemberModel `tfsdk:"members"`
 }

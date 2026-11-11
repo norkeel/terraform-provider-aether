@@ -156,7 +156,7 @@ func (s *Server) RemoveMember(org, id string) {
 	}
 }
 
-// SetRepeatingMemberCursor forces the aether_organization_members list to
+// SetRepeatingMemberCursor forces the norkeel_organization_members list to
 // report cursor as next_cursor on EVERY page for org, regardless of whether
 // the page is full - a fake server contract violation used to prove the
 // data source's collectAll pager (a consumer distinct from the Harbor-page

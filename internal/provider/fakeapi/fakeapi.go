@@ -1,4 +1,4 @@
-// Package fakeapi is an in-process fake of the Aether API for unit tests.
+// Package fakeapi is an in-process fake of the Norkeel API for unit tests.
 // It speaks exactly the JSON shapes of api/openapi.yaml and records requests.
 //
 // IDs are UUIDs: every id-shaped field in the generated client

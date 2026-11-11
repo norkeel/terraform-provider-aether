@@ -11,12 +11,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &nodePoolMachinesDataSource{}
 
-// NewNodePoolMachinesDataSource returns data.aether_node_pool_machines.
+// NewNodePoolMachinesDataSource returns data.norkeel_node_pool_machines.
 func NewNodePoolMachinesDataSource() datasource.DataSource { return &nodePoolMachinesDataSource{} }
 
 type nodePoolMachinesDataSource struct{ pd *providerData }

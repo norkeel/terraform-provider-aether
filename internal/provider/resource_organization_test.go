@@ -11,10 +11,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
-// These tests drive aether_organization through a real terraform (or tofu)
+// These tests drive norkeel_organization through a real terraform (or tofu)
 // binary against the in-process fake (fakeapi/organizations.go), which
 // reproduces what aether-api DOES (SDD task-9-measured-contract.md), under the
 // controller rulings T9-5..T9-8 of task-9-brief-amended.md.
@@ -25,24 +25,24 @@ import (
 // state-only, so it must add zero requests.
 //
 // Symbols the coder provides: NewOrganizationResource (type name
-// aether_organization), registered in provider.go.
+// norkeel_organization), registered in provider.go.
 
 const (
-	orgResource = "aether_organization.o"
+	orgResource = "norkeel_organization.o"
 	orgURLRE    = `^/organizations/[^/]+$`
 )
 
 // orgHCL renders the organization under test; extra lines go inside the block.
 func orgHCL(extra ...string) string {
 	return fmt.Sprintf(`
-provider "aether" {}
-resource "aether_organization" "o" {
+provider "norkeel" {}
+resource "norkeel_organization" "o" {
 %s
 }
 `, strings.Join(extra, "\n"))
 }
 
-const providerOnlyHCL = `provider "aether" {}`
+const providerOnlyHCL = `provider "norkeel" {}`
 
 // importOrgStep adopts the provider's organization into state.
 func importOrgStep(check resource.ImportStateCheckFunc) resource.TestStep {
@@ -100,7 +100,7 @@ func TestOrganizationResource_CreateRefusalNamesTheImportCommand(t *testing.T) {
 		ProtoV6ProviderFactories: factories(),
 		Steps: []resource.TestStep{{
 			Config:      orgHCL(),
-			ExpectError: loose("terraform import aether_organization"),
+			ExpectError: loose("terraform import norkeel_organization"),
 		}},
 	})
 }

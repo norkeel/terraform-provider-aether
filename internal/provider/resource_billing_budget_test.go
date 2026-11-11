@@ -13,10 +13,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
-// These tests drive aether_billing_budget (internal/provider/resource_billing_budget.go,
+// These tests drive norkeel_billing_budget (internal/provider/resource_billing_budget.go,
 // registered in provider.go as NewBillingBudgetResource) through a real
 // terraform (or tofu) binary against the in-process fake (fakeapi/budgets.go),
 // under the controller rulings T12-1..T12-7 of task-12-brief-amended.md.
@@ -26,11 +26,11 @@ import (
 // one.
 
 const (
-	budgetResource = "aether_billing_budget.b"
+	budgetResource = "norkeel_billing_budget.b"
 	budgetRE       = `/billing/budget$`
 )
 
-// budgetHCL renders one aether_billing_budget resource. limit is rendered
+// budgetHCL renders one norkeel_billing_budget resource. limit is rendered
 // as a raw HCL numeric literal (not quoted), so a test can pass exactly the
 // text it wants evaluated (e.g. "1e10", "12.345", "9999999999.99") rather
 // than a Go-formatted float that might silently normalise it first.
@@ -43,8 +43,8 @@ func budgetHCL(limit string, thresholds []int64, extra ...string) string {
 		th[i] = strconv.FormatInt(t, 10)
 	}
 	return fmt.Sprintf(`
-provider "aether" {}
-resource "aether_billing_budget" "b" {
+provider "norkeel" {}
+resource "norkeel_billing_budget" "b" {
   monthly_limit_eur = %s
   thresholds_pct    = [%s]
 %s

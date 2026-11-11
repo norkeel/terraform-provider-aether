@@ -19,7 +19,7 @@ import (
 // exists to prevent.
 
 func kubeconfigDataSourceHCL(clusterID string) string {
-	return dsProviderBlock + `data "aether_kubeconfig" "k" {
+	return dsProviderBlock + `data "norkeel_kubeconfig" "k" {
   cluster_id = "` + clusterID + `"
 }`
 }
@@ -27,7 +27,7 @@ func kubeconfigDataSourceHCL(clusterID string) string {
 const seededKubeconfigYAML = "apiVersion: v1\nkind: Config\nclusters:\n- name: seeded\n  cluster:\n    server: https://seeded.example.test:6443\ncontexts: []\ncurrent-context: \"\"\nusers: []\n"
 
 // K1. Fails today (RED) with "does not support data source
-// \"aether_kubeconfig\"". Once implemented, fails against a wrong
+// \"norkeel_kubeconfig\"". Once implemented, fails against a wrong
 // implementation if `content` differs from the fake's YAML by even one byte
 // (e.g. a coder who trims trailing whitespace, or who used
 // GetKubeconfigWithResponse and got a JSON-decode error instead), or if the
@@ -42,9 +42,9 @@ func TestDataSourceKubeconfig_ContentIsByteExactAndSensitive(t *testing.T) {
 		Steps: []resource.TestStep{{
 			Config: kubeconfigDataSourceHCL(cid),
 			ConfigStateChecks: []statecheck.StateCheck{
-				statecheck.ExpectSensitiveValue("data.aether_kubeconfig.k", tfjsonpath.New("content")),
+				statecheck.ExpectSensitiveValue("data.norkeel_kubeconfig.k", tfjsonpath.New("content")),
 			},
-			Check: resource.TestCheckResourceAttr("data.aether_kubeconfig.k", "content", seededKubeconfigYAML),
+			Check: resource.TestCheckResourceAttr("data.norkeel_kubeconfig.k", "content", seededKubeconfigYAML),
 		}},
 	})
 }

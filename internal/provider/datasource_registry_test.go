@@ -1,6 +1,6 @@
 package provider_test
 
-// Tests for the aether_registry data source (datasource_registry.go, T14-3),
+// Tests for the norkeel_registry data source (datasource_registry.go, T14-3),
 // registered as NewRegistryDataSource in provider.go's DataSources().
 
 import (
@@ -9,11 +9,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-const registryDataSource = "data.aether_registry.r"
+const registryDataSource = "data.norkeel_registry.r"
 
 const registryDSHCL = `
-provider "aether" {}
-data "aether_registry" "r" {}
+provider "norkeel" {}
+data "norkeel_registry" "r" {}
 `
 
 // RG1. Fails if a disabled/never-enabled registry does not read enabled =

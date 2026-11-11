@@ -1,6 +1,6 @@
 package provider_test
 
-// Tests for the aether_invoices data source (datasource_invoices.go, T14-11),
+// Tests for the norkeel_invoices data source (datasource_invoices.go, T14-11),
 // registered as NewInvoicesDataSource in provider.go's DataSources().
 
 import (
@@ -15,15 +15,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
-const invoicesDataSource = "data.aether_invoices.i"
+const invoicesDataSource = "data.norkeel_invoices.i"
 
 const invoicesDSHCL = `
-provider "aether" {}
-data "aether_invoices" "i" {}
+provider "norkeel" {}
+data "norkeel_invoices" "i" {}
 `
 
 // IN1. Seeds 150 invoices (IDs and periods aligned so the broken `id <
@@ -56,7 +56,7 @@ func TestInvoicesDataSource_ReadRawFieldsNoPIITwoPages(t *testing.T) {
 			InvoiceNumber: fmt.Sprintf("AE-2020-%04d", i),
 			SubtotalCents: 10000 + int64(i), TaxCents: 1900, TotalCents: 11900 + int64(i),
 			TaxRateBP: 1900, TaxNote: "VAT 19%", Status: "issued",
-			Issuer: map[string]any{"legal_name": "Aether SRL"},
+			Issuer: map[string]any{"legal_name": "Norkeel SRL"},
 			Buyer:  map[string]any{"billing_email": "buyer@example.com"},
 		})
 		if i == 0 {
@@ -190,7 +190,7 @@ func TestInvoicesDataSource_SchemaDescriptionCitesAPIIssue(t *testing.T) {
 	provider.NewInvoicesDataSource().Schema(context.Background(), datasource.SchemaRequest{}, &resp)
 	const want = "aether-api #318"
 	if !strings.Contains(resp.Schema.MarkdownDescription, want) {
-		t.Fatalf("aether_invoices description = %q, want it to contain %q", resp.Schema.MarkdownDescription, want)
+		t.Fatalf("norkeel_invoices description = %q, want it to contain %q", resp.Schema.MarkdownDescription, want)
 	}
 }
 

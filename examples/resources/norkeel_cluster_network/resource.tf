@@ -4,7 +4,7 @@ variable "cluster_id" {
 
 # Creating this OVERWRITES the cluster's current policy; destroying it OPENS the
 # public endpoint to any source address. Entries must be canonical IPv4 prefixes.
-resource "aether_cluster_network" "this" {
+resource "norkeel_cluster_network" "this" {
   cluster_id = var.cluster_id
   authorized_cidrs = [
     "203.0.113.0/24",

@@ -1,17 +1,17 @@
 ---
-page_title: "Aether Provider"
-description: Manage Aether Kubernetes clusters, access and registry with Terraform or OpenTofu.
+page_title: "Norkeel Provider"
+description: Manage Norkeel Kubernetes clusters, access and registry with Terraform or OpenTofu.
 ---
 
-# Aether Provider
+# Norkeel Provider
 
 Works with Terraform 1.5+ and OpenTofu 1.6+.
 
-**Terraform vs OpenTofu:** the provider is published under the same address, `plane-shift/aether`, on both the Terraform Registry and the OpenTofu Registry, and behaves identically on both engines. Use `terraform` or `tofu` for every command shown in these docs.
+**Terraform vs OpenTofu:** the provider is published under the same address, `norkeel/norkeel`, on both the Terraform Registry and the OpenTofu Registry, and behaves identically on both engines. Use `terraform` or `tofu` for every command shown in these docs.
 
 ## Prerequisite: an API token
 
-Create a token in the Aether portal (Settings → API Tokens). Choose the role **Admin** (the default): the provider manages members, including owners, and an admin token is the only role that may. Only an organization **owner** can create API tokens. The token belongs to one organization; the provider uses that organization for every resource. Tokens are managed in the portal only — this provider has no resource for them.
+Create a token in the Norkeel portal (Settings → API Tokens). Choose the role **Admin** (the default): the provider manages members, including owners, and an admin token is the only role that may. Only an organization **owner** can create API tokens. The token belongs to one organization; the provider uses that organization for every resource. Tokens are managed in the portal only — this provider has no resource for them.
 
 ### What a token may do
 
@@ -29,7 +29,7 @@ An API token is not tied to the member who created it: removing that member, or 
 
 ## Endpoint
 
-The `endpoint` attribute (or `AETHER_ENDPOINT`) selects the API. It defaults to production, `https://api.aetherplatform.cloud`; use `https://dev.api.aetherplatform.cloud` for the dev environment.
+The `endpoint` attribute (or `NORKEEL_ENDPOINT`) selects the API. It defaults to production, `https://api.aetherplatform.cloud`; use `https://dev.api.aetherplatform.cloud` for the dev environment.
 
 ## State holds secrets
 
@@ -40,9 +40,9 @@ The state stores the cluster kubeconfig, registry robot secrets, the registry's 
 
 ### Optional
 
-- `api_token` (String, Sensitive) API token created in the portal (`aether_…`). Falls back to `AETHER_API_TOKEN`.
-- `endpoint` (String) API base URL. Defaults to `https://api.aetherplatform.cloud`; falls back to `AETHER_ENDPOINT`. Must be `https`, or `http` with a loopback host (`localhost` or a loopback IP) — the API token is sent on every request, so plain `http` to any other host is refused rather than leaking the credential in cleartext.
-- `organization_id` (String) Organization the token belongs to. Optional: resolved automatically when the token sees exactly one organization. Falls back to `AETHER_ORGANIZATION_ID`.
+- `api_token` (String, Sensitive) API token created in the portal (`aether_…`). Falls back to `NORKEEL_API_TOKEN`.
+- `endpoint` (String) API base URL. Defaults to `https://api.aetherplatform.cloud`; falls back to `NORKEEL_ENDPOINT`. Must be `https`, or `http` with a loopback host (`localhost` or a loopback IP) — the API token is sent on every request, so plain `http` to any other host is refused rather than leaking the credential in cleartext.
+- `organization_id` (String) Organization the token belongs to. Optional: resolved automatically when the token sees exactly one organization. Falls back to `NORKEEL_ORGANIZATION_ID`.
 
 ## Example
 
@@ -50,23 +50,23 @@ The state stores the cluster kubeconfig, registry robot secrets, the registry's 
 terraform {
   required_version = ">= 1.5" # OpenTofu >= 1.6 works the same way
   required_providers {
-    aether = {
-      source  = "plane-shift/aether"
-      version = "~> 0.1"
+    norkeel = {
+      source  = "norkeel/norkeel"
+      version = "~> 0.2"
     }
   }
 }
 
-variable "aether_api_token" {
+variable "norkeel_api_token" {
   type      = string
   sensitive = true
-  default   = null # unset here so the provider falls back to AETHER_API_TOKEN
+  default   = null # unset here so the provider falls back to NORKEEL_API_TOKEN
 }
 
-# Create an API token in the Aether portal first (Settings → API Tokens). Role: Admin (the default).
-provider "aether" {
-  api_token = var.aether_api_token # or AETHER_API_TOKEN
+# Create an API token in the Norkeel portal first (Settings → API Tokens). Role: Admin (the default).
+provider "norkeel" {
+  api_token = var.norkeel_api_token # or NORKEEL_API_TOKEN
   # endpoint defaults to https://api.aetherplatform.cloud (production);
-  # use https://dev.api.aetherplatform.cloud for the dev environment (or AETHER_ENDPOINT).
+  # use https://dev.api.aetherplatform.cloud for the dev environment (or NORKEEL_ENDPOINT).
 }
 ```

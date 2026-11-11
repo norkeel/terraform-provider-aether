@@ -1,6 +1,6 @@
 package provider_test
 
-// Tests for the aether_organization_members data source
+// Tests for the norkeel_organization_members data source
 // (datasource_organization_members.go, T14-1 of task-14-brief-amended.md,
 // registered as NewOrganizationMembersDataSource in provider.go's
 // DataSources()): flattened member attributes (including the never-written
@@ -16,11 +16,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
-const membersDataSource = "data.aether_organization_members.m"
+const membersDataSource = "data.norkeel_organization_members.m"
 
 const membersDSHCL = `
-provider "aether" {}
-data "aether_organization_members" "m" {}
+provider "norkeel" {}
+data "norkeel_organization_members" "m" {}
 `
 
 // Fails if any of id/email/role/created_at is missing from the flattened

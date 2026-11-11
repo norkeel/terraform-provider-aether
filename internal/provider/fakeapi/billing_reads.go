@@ -201,7 +201,7 @@ func (s *Server) SeedInvoice(org string, inv InvoiceSeed) string {
 	return id
 }
 
-// SetRepeatingInvoiceCursor forces the aether_invoices list to report cursor
+// SetRepeatingInvoiceCursor forces the norkeel_invoices list to report cursor
 // as next_cursor on EVERY page for org, regardless of what brokenCursorPage
 // would naturally compute. cursor must be a UUID the caller controls (e.g. a
 // SeedInvoice id), since nextUUIDCursor parses next_cursor as one.

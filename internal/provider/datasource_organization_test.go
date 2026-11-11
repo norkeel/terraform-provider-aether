@@ -8,7 +8,7 @@ import (
 
 // O1. Expected coder symbol: NewOrganizationDataSource (datasource_organization.go).
 //
-// Fails today (RED) with "does not support data source \"aether_organization\""
+// Fails today (RED) with "does not support data source \"norkeel_organization\""
 // - the data source is not registered. Once implemented, fails against a
 // wrong implementation if: any of the 8 attributes is missing or wrong
 // (including a null billing_email/vat_id when the fake never set them, T13-2),
@@ -21,23 +21,23 @@ func TestDataSourceOrganization_ReadsAllAttributes(t *testing.T) {
 		IsUnitTest:               true,
 		ProtoV6ProviderFactories: factories(),
 		Steps: []resource.TestStep{{
-			Config: dsProviderBlock + `data "aether_organization" "o" {}`,
+			Config: dsProviderBlock + `data "norkeel_organization" "o" {}`,
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_organization.o", "id", testOrg),
-				resource.TestCheckResourceAttr("data.aether_organization.o", "name", "Acme"),
-				resource.TestCheckResourceAttr("data.aether_organization.o", "slug", "acme"),
-				resource.TestCheckResourceAttr("data.aether_organization.o", "plan", "starter"),
-				resource.TestCheckResourceAttr("data.aether_organization.o", "billing_email", "billing@acme.test"),
-				resource.TestCheckResourceAttr("data.aether_organization.o", "vat_id", "RO123456"),
-				resource.TestCheckResourceAttrSet("data.aether_organization.o", "created_at"),
-				resource.TestCheckResourceAttrSet("data.aether_organization.o", "updated_at"),
+				resource.TestCheckResourceAttr("data.norkeel_organization.o", "id", testOrg),
+				resource.TestCheckResourceAttr("data.norkeel_organization.o", "name", "Acme"),
+				resource.TestCheckResourceAttr("data.norkeel_organization.o", "slug", "acme"),
+				resource.TestCheckResourceAttr("data.norkeel_organization.o", "plan", "starter"),
+				resource.TestCheckResourceAttr("data.norkeel_organization.o", "billing_email", "billing@acme.test"),
+				resource.TestCheckResourceAttr("data.norkeel_organization.o", "vat_id", "RO123456"),
+				resource.TestCheckResourceAttrSet("data.norkeel_organization.o", "created_at"),
+				resource.TestCheckResourceAttrSet("data.norkeel_organization.o", "updated_at"),
 			),
 		}},
 	})
 }
 
 // Fails if billing_email/vat_id read as "" instead of null when the fake
-// never set them (optString semantics, same as the aether_organization
+// never set them (optString semantics, same as the norkeel_organization
 // resource).
 func TestDataSourceOrganization_UnsetBillingFieldsAreNullNotEmpty(t *testing.T) {
 	api := setupFake(t)
@@ -46,10 +46,10 @@ func TestDataSourceOrganization_UnsetBillingFieldsAreNullNotEmpty(t *testing.T) 
 		IsUnitTest:               true,
 		ProtoV6ProviderFactories: factories(),
 		Steps: []resource.TestStep{{
-			Config: dsProviderBlock + `data "aether_organization" "o" {}`,
+			Config: dsProviderBlock + `data "norkeel_organization" "o" {}`,
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckNoResourceAttr("data.aether_organization.o", "billing_email"),
-				resource.TestCheckNoResourceAttr("data.aether_organization.o", "vat_id"),
+				resource.TestCheckNoResourceAttr("data.norkeel_organization.o", "billing_email"),
+				resource.TestCheckNoResourceAttr("data.norkeel_organization.o", "vat_id"),
 			),
 		}},
 	})

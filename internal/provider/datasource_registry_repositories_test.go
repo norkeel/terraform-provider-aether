@@ -1,6 +1,6 @@
 package provider_test
 
-// Tests for the aether_registry_repositories data source
+// Tests for the norkeel_registry_repositories data source
 // (datasource_registry_repositories.go, T14-4, registered as
 // NewRegistryRepositoriesDataSource in provider.go's DataSources()):
 // Harbor-page pagination (next_cursor "2", "3", ...), attribute mapping,
@@ -18,11 +18,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
-const repositoriesDataSource = "data.aether_registry_repositories.r"
+const repositoriesDataSource = "data.norkeel_registry_repositories.r"
 
 const repositoriesDSHCL = `
-provider "aether" {}
-data "aether_registry_repositories" "r" {}
+provider "norkeel" {}
+data "norkeel_registry_repositories" "r" {}
 `
 
 // RP1. Seeds three repositories, forces the fake to serve them 2-per-page

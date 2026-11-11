@@ -1,6 +1,6 @@
 package provider_test
 
-// Tests for the aether_usage data source (datasource_usage.go, T14-9),
+// Tests for the norkeel_usage data source (datasource_usage.go, T14-9),
 // registered as NewUsageDataSource in provider.go's DataSources().
 
 import (
@@ -10,14 +10,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
-const usageDataSource = "data.aether_usage.u"
+const usageDataSource = "data.norkeel_usage.u"
 
 const usageDSHCL = `
-provider "aether" {}
-data "aether_usage" "u" {}
+provider "norkeel" {}
+data "norkeel_usage" "u" {}
 `
 
 // US1. Fails if period_start/period_end/total_eur/subscriptions is missing

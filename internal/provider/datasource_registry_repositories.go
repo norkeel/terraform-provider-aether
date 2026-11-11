@@ -13,12 +13,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &registryRepositoriesDataSource{}
 
-// NewRegistryRepositoriesDataSource is aether_registry_repositories (T14-4).
+// NewRegistryRepositoriesDataSource is norkeel_registry_repositories (T14-4).
 func NewRegistryRepositoriesDataSource() datasource.DataSource {
 	return &registryRepositoriesDataSource{}
 }
@@ -63,7 +63,7 @@ func decodeHarborPage[T any](hr *http.Response, status string, body []byte) ([]T
 	var diags diag.Diagnostics
 	var page harborListWire[T]
 	if err := json.Unmarshal(body, &page); err != nil || page.Items == nil {
-		diags.AddError("Aether API returned no usable registry list", describeUndecodable(hr, status, err, "items"))
+		diags.AddError("Norkeel API returned no usable registry list", describeUndecodable(hr, status, err, "items"))
 		return nil, "", diags
 	}
 	next := ""
@@ -120,7 +120,7 @@ func (d *registryRepositoriesDataSource) Read(ctx context.Context, _ datasource.
 		}
 		for _, it := range items {
 			if it.Name == "" {
-				diags.AddError("Aether API returned no usable registry list", describeJSONWithout(hr, hr.Status, "repository name"))
+				diags.AddError("Norkeel API returned no usable registry list", describeJSONWithout(hr, hr.Status, "repository name"))
 				return nil, "", pageFailure(diags)
 			}
 		}

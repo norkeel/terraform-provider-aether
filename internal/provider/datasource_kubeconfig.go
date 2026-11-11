@@ -14,12 +14,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &kubeconfigDataSource{}
 
-// NewKubeconfigDataSource returns data.aether_kubeconfig.
+// NewKubeconfigDataSource returns data.norkeel_kubeconfig.
 func NewKubeconfigDataSource() datasource.DataSource { return &kubeconfigDataSource{} }
 
 type kubeconfigDataSource struct{ pd *providerData }
@@ -86,12 +86,12 @@ func (d *kubeconfigDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		return
 	}
 	if len(body) > maxKubeconfigBytes {
-		resp.Diagnostics.AddError("Aether API answered 200 without a kubeconfig",
+		resp.Diagnostics.AddError("Norkeel API answered 200 without a kubeconfig",
 			fmt.Sprintf("GET %s returned a body larger than %d bytes, which is not a kubeconfig.", hr.Request.URL, maxKubeconfigBytes))
 		return
 	}
 	if len(bytes.TrimSpace(body)) == 0 || !bytes.Contains(body, []byte("apiVersion")) {
-		resp.Diagnostics.AddError("Aether API answered 200 without a kubeconfig",
+		resp.Diagnostics.AddError("Norkeel API answered 200 without a kubeconfig",
 			fmt.Sprintf("GET %s returned %s with content type %q and a body that is not a kubeconfig (%d bytes, no `apiVersion`).",
 				hr.Request.URL, hr.Status, hr.Header.Get("Content-Type"), len(body)))
 		return

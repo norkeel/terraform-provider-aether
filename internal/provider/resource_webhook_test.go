@@ -13,10 +13,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
-// These tests drive aether_webhook (internal/provider/resource_webhook.go,
+// These tests drive norkeel_webhook (internal/provider/resource_webhook.go,
 // registered in provider.go's Resources() as NewWebhookResource) through a
 // real terraform (or tofu) binary against the in-process fake
 // (fakeapi/webhooks.go), under the controller rulings T10-0..T10-14 of
@@ -27,7 +27,7 @@ import (
 // added and why.
 
 const (
-	webhookResource = "aether_webhook.w"
+	webhookResource = "norkeel_webhook.w"
 	webhooksListRE  = `/webhooks$`
 	webhookOneRE    = `/webhooks/[^/]+$`
 	webhookRotateRE = `/webhooks/[^/]+/rotate-secret$`
@@ -37,7 +37,7 @@ const (
 // total).
 var webhookSecretRE = regexp.MustCompile(`^whsec_[0-9a-f]{48}$`)
 
-// webhookHCL renders one aether_webhook resource. events is always rendered
+// webhookHCL renders one norkeel_webhook resource. events is always rendered
 // as an explicit HCL list literal (events is Required, so every config sets
 // it - an empty slice renders `events = []`, which the SizeAtLeast(1)
 // validator must refuse at plan time, never an omitted attribute). extra
@@ -48,8 +48,8 @@ func webhookHCL(url string, events []string, extra ...string) string {
 		quoted[i] = fmt.Sprintf("%q", e)
 	}
 	return fmt.Sprintf(`
-provider "aether" {}
-resource "aether_webhook" "w" {
+provider "norkeel" {}
+resource "norkeel_webhook" "w" {
   url    = %q
   events = [%s]
 %s

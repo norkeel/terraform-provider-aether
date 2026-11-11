@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
 // Expected coder symbol: NewClusterVolumesDataSource (datasource_cluster_volumes.go).
@@ -15,13 +15,13 @@ import (
 // OA:1349-1352's own warning, cited in the brief's defect #8).
 
 func volumesDataSourceHCL(clusterID string) string {
-	return dsProviderBlock + `data "aether_cluster_volumes" "v" {
+	return dsProviderBlock + `data "norkeel_cluster_volumes" "v" {
   cluster_id = "` + clusterID + `"
 }`
 }
 
 // S1. Fails today (RED) with "does not support data source
-// \"aether_cluster_volumes\"". Once implemented, fails against a wrong
+// \"norkeel_cluster_volumes\"". Once implemented, fails against a wrong
 // implementation if inventory_available=false does not clear volumes to an
 // empty list, if it is surfaced as an ERROR (it must not be - contract §5:
 // "could not look" is always 200), or if inventory_available itself isn't
@@ -37,9 +37,9 @@ func TestDataSourceClusterVolumes_UnavailableIsEmptyListNoErrorFlagFalse(t *test
 		Steps: []resource.TestStep{{
 			Config: volumesDataSourceHCL(cid),
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.#", "0"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "inventory_available", "false"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "last_synced_at", "0001-01-01T00:00:00Z"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.#", "0"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "inventory_available", "false"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "last_synced_at", "0001-01-01T00:00:00Z"),
 			),
 		}},
 	})
@@ -63,11 +63,11 @@ func TestDataSourceClusterVolumes_SortedByIDRegardlessOfFakeOrder(t *testing.T) 
 		Steps: []resource.TestStep{{
 			Config: volumesDataSourceHCL(cid),
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.#", "3"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.0.id", "vol-aaa"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.1.id", "vol-mmm"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.2.id", "vol-zzz"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "inventory_available", "true"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.#", "3"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.0.id", "vol-aaa"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.1.id", "vol-mmm"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.2.id", "vol-zzz"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "inventory_available", "true"),
 			),
 		}},
 	})
@@ -86,7 +86,7 @@ func TestDataSourceClusterVolumes_UsedPercentRoundTripsAnExactValue(t *testing.T
 		ProtoV6ProviderFactories: factories(),
 		Steps: []resource.TestStep{{
 			Config: volumesDataSourceHCL(cid),
-			Check:  resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.0.used_percent", "40"),
+			Check:  resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.0.used_percent", "40"),
 		}},
 	})
 }
@@ -107,18 +107,18 @@ func TestDataSourceClusterVolumes_AvailableReadsAllFields(t *testing.T) {
 		Steps: []resource.TestStep{{
 			Config: volumesDataSourceHCL(cid),
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.0.id", "vol-1"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.0.name", "shared-1"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.0.type", "shared"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.0.storage_class", "aether-shared"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.0.provisioned_bytes", "0"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.0.used_bytes", "300"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.0.billed_on", "used"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.0.state", "Bound"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.0.watchers", "2"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "volumes.0.created_at", "2026-09-01T00:00:00Z"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "org_shared_quota_bytes", "5000"),
-				resource.TestCheckResourceAttr("data.aether_cluster_volumes.v", "org_shared_used_bytes", "1200"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.0.id", "vol-1"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.0.name", "shared-1"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.0.type", "shared"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.0.storage_class", "aether-shared"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.0.provisioned_bytes", "0"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.0.used_bytes", "300"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.0.billed_on", "used"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.0.state", "Bound"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.0.watchers", "2"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "volumes.0.created_at", "2026-09-01T00:00:00Z"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "org_shared_quota_bytes", "5000"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_volumes.v", "org_shared_used_bytes", "1200"),
 			),
 		}},
 	})

@@ -7,7 +7,7 @@ package provider_test
 // PLAN time with the exact same Terraform-core diagnostic:
 //
 //	Error: Invalid data source
-//	The provider hashicorp/aether does not support data source "aether_<name>".
+//	The provider hashicorp/norkeel does not support data source "norkeel_<name>".
 //
 // (measured empirically against this worktree's HEAD, not assumed). That is
 // the CURRENT failure reason for every test below; each test's own doc
@@ -32,10 +32,10 @@ import (
 var exactlyOneOfErrorRE = regexp.MustCompile(`(?is)exactly one of|one\s*\(and only one\)\s*of`)
 
 // dsOrgProvider is the provider block every data-source test needs; setupFake
-// already wires AETHER_ENDPOINT/AETHER_API_TOKEN and leaves
-// AETHER_ORGANIZATION_ID empty so Configure auto-resolves the fake's single
+// already wires NORKEEL_ENDPOINT/NORKEEL_API_TOKEN and leaves
+// NORKEEL_ORGANIZATION_ID empty so Configure auto-resolves the fake's single
 // registered org (testOrg).
-const dsProviderBlock = `provider "aether" {}` + "\n"
+const dsProviderBlock = `provider "norkeel" {}` + "\n"
 
 // upperCaseUUID is a syntactically valid UUID (v4, variant 10xx) spelled in
 // upper case - the shape parseInputID/the m4 canonical-UUID validator must
@@ -43,7 +43,7 @@ const dsProviderBlock = `provider "aether" {}` + "\n"
 // (review m4).
 const upperCaseUUID = "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA"
 
-// clusterDataSourceHCL renders `data "aether_cluster" "c"` with whichever of
+// clusterDataSourceHCL renders `data "norkeel_cluster" "c"` with whichever of
 // id/name (or neither/both) the test wants to exercise.
 func clusterDataSourceHCL(id, name string) string {
 	body := ""
@@ -53,10 +53,10 @@ func clusterDataSourceHCL(id, name string) string {
 	if name != "" {
 		body += fmt.Sprintf("  name = %q\n", name)
 	}
-	return dsProviderBlock + fmt.Sprintf("data \"aether_cluster\" \"c\" {\n%s}\n", body)
+	return dsProviderBlock + fmt.Sprintf("data \"norkeel_cluster\" \"c\" {\n%s}\n", body)
 }
 
-// nodePoolDataSourceHCL renders `data "aether_node_pool" "p"`.
+// nodePoolDataSourceHCL renders `data "norkeel_node_pool" "p"`.
 func nodePoolDataSourceHCL(clusterID, id, name string) string {
 	body := fmt.Sprintf("  cluster_id = %q\n", clusterID)
 	if id != "" {
@@ -65,5 +65,5 @@ func nodePoolDataSourceHCL(clusterID, id, name string) string {
 	if name != "" {
 		body += fmt.Sprintf("  name = %q\n", name)
 	}
-	return dsProviderBlock + fmt.Sprintf("data \"aether_node_pool\" \"p\" {\n%s}\n", body)
+	return dsProviderBlock + fmt.Sprintf("data \"norkeel_node_pool\" \"p\" {\n%s}\n", body)
 }
