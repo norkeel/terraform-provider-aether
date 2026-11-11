@@ -23,7 +23,8 @@ func isLegacyProviderAddress(addr string) bool {
 }
 
 // moveStateFromLegacy lets a `moved` block carry state from the pre-rename
-// `aether_<suffix>` type to this resource. The schemas did not change in the
+// `aether_<suffix>` type to this resource, where `norkeel_<suffix>` is the type
+// name r's Metadata reports. The schemas did not change in the
 // rename, so the old state is decoded with this resource's own schema and
 // copied across as is: secrets returned only on create (robot accounts,
 // webhooks) are kept, and nothing is replaced or rotated.
@@ -35,7 +36,10 @@ func isLegacyProviderAddress(addr string) bool {
 //
 // Needs Terraform 1.8+ (cross-type moves). A request from any other provider or
 // type is left unhandled, so the framework reports it as unsupported.
-func moveStateFromLegacy(ctx context.Context, r resource.Resource, suffix string) []resource.StateMover {
+func moveStateFromLegacy(ctx context.Context, r resource.Resource) []resource.StateMover {
+	var mr resource.MetadataResponse
+	r.Metadata(ctx, resource.MetadataRequest{ProviderTypeName: ProviderName}, &mr)
+	legacyType := legacyTypePrefix + strings.TrimPrefix(mr.TypeName, ProviderName+"_")
 	var sr resource.SchemaResponse
 	r.Schema(ctx, resource.SchemaRequest{}, &sr)
 	if sr.Diagnostics.HasError() {
@@ -45,10 +49,16 @@ func moveStateFromLegacy(ctx context.Context, r resource.Resource, suffix string
 	return []resource.StateMover{{
 		SourceSchema: &src,
 		StateMover: func(_ context.Context, req resource.MoveStateRequest, resp *resource.MoveStateResponse) {
-			if req.SourceTypeName != legacyTypePrefix+suffix || !isLegacyProviderAddress(req.SourceProviderAddress) {
+			if req.SourceTypeName != legacyType || !isLegacyProviderAddress(req.SourceProviderAddress) {
 				return
 			}
+			// The framework leaves SourceState nil when the legacy state does
+			// not decode with this schema. Say so: returning silently would
+			// surface as a generic "does not include support" error.
 			if req.SourceState == nil {
+				resp.Diagnostics.AddError("Cannot move "+legacyType+" state",
+					"The "+legacyType+" state could not be decoded with the "+mr.TypeName+" schema, so it was not moved. "+
+						"Remove the old address from state and import the resource under "+mr.TypeName+" instead.")
 				return
 			}
 			resp.TargetState.Raw = req.SourceState.Raw

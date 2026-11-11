@@ -52,12 +52,12 @@ type registryModel struct {
 	UpdatedAt      types.String `tfsdk:"updated_at"`
 }
 
-// Metadata names the resource norkeel_registry.
-// MoveState accepts state moved from the pre-rename aether_registry type.
+// MoveState accepts state moved from the pre-rename aether_* type.
 func (r *registryResource) MoveState(ctx context.Context) []resource.StateMover {
-	return moveStateFromLegacy(ctx, r, "registry")
+	return moveStateFromLegacy(ctx, r)
 }
 
+// Metadata names the resource norkeel_registry.
 func (r *registryResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_registry"
 }

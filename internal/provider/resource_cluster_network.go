@@ -73,12 +73,12 @@ var rateLimitAttrTypes = map[string]attr.Type{
 	"burst":                      types.Int64Type,
 }
 
-// Metadata names the resource norkeel_cluster_network.
-// MoveState accepts state moved from the pre-rename aether_cluster_network type.
+// MoveState accepts state moved from the pre-rename aether_* type.
 func (r *clusterNetworkResource) MoveState(ctx context.Context) []resource.StateMover {
-	return moveStateFromLegacy(ctx, r, "cluster_network")
+	return moveStateFromLegacy(ctx, r)
 }
 
+// Metadata names the resource norkeel_cluster_network.
 func (r *clusterNetworkResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_cluster_network"
 }

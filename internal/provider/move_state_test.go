@@ -94,3 +94,21 @@ func TestMoveStateIgnoresOtherSources(t *testing.T) {
 		}
 	}
 }
+
+func TestMoveStateReportsUndecodableLegacyState(t *testing.T) {
+	ctx := context.Background()
+	r := &clusterResource{}
+	movers := r.MoveState(ctx)
+	src := legacyState(t, r)
+	resp := &resource.MoveStateResponse{TargetState: tfsdk.State{Schema: src.Schema, Raw: tftypes.NewValue(src.Raw.Type(), nil)}}
+	movers[0].StateMover(ctx, resource.MoveStateRequest{
+		SourceProviderAddress: "registry.terraform.io/plane-shift/aether",
+		SourceTypeName:        "aether_cluster",
+	}, resp)
+	if !resp.Diagnostics.HasError() {
+		t.Fatal("want an error diagnostic when the legacy state did not decode")
+	}
+	if !resp.TargetState.Raw.IsNull() {
+		t.Fatal("target state set from a state that did not decode")
+	}
+}

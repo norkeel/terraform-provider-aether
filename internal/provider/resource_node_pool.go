@@ -113,12 +113,12 @@ var nodeTaintType = types.ObjectType{AttrTypes: map[string]attr.Type{
 	"key": types.StringType, "value": types.StringType, "effect": types.StringType,
 }}
 
-// Metadata names the resource norkeel_node_pool.
-// MoveState accepts state moved from the pre-rename aether_node_pool type.
+// MoveState accepts state moved from the pre-rename aether_* type.
 func (r *nodePoolResource) MoveState(ctx context.Context) []resource.StateMover {
-	return moveStateFromLegacy(ctx, r, "node_pool")
+	return moveStateFromLegacy(ctx, r)
 }
 
+// Metadata names the resource norkeel_node_pool.
 func (r *nodePoolResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_node_pool"
 }

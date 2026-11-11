@@ -71,12 +71,12 @@ type clusterModel struct {
 	Timeouts                  timeouts.Value           `tfsdk:"timeouts"`
 }
 
-// Metadata names the resource norkeel_cluster.
-// MoveState accepts state moved from the pre-rename aether_cluster type.
+// MoveState accepts state moved from the pre-rename aether_* type.
 func (r *clusterResource) MoveState(ctx context.Context) []resource.StateMover {
-	return moveStateFromLegacy(ctx, r, "cluster")
+	return moveStateFromLegacy(ctx, r)
 }
 
+// Metadata names the resource norkeel_cluster.
 func (r *clusterResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_cluster"
 }

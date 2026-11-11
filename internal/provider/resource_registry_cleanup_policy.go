@@ -117,12 +117,12 @@ type cleanupPolicyWire struct {
 	LastRunFreedBytes *int64     `json:"last_run_freed_bytes"`
 }
 
-// Metadata names the resource norkeel_registry_cleanup_policy.
-// MoveState accepts state moved from the pre-rename aether_registry_cleanup_policy type.
+// MoveState accepts state moved from the pre-rename aether_* type.
 func (r *cleanupPolicyResource) MoveState(ctx context.Context) []resource.StateMover {
-	return moveStateFromLegacy(ctx, r, "registry_cleanup_policy")
+	return moveStateFromLegacy(ctx, r)
 }
 
+// Metadata names the resource norkeel_registry_cleanup_policy.
 func (r *cleanupPolicyResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_registry_cleanup_policy"
 }

@@ -43,7 +43,7 @@ UPGRADING FROM v0.1:
    is: robot account and webhook secrets are preserved and nothing is replaced.
    `terraform plan` should show only the moves.
 3. On an engine without cross-type moves, remove the old addresses
-   (`terraform state list | grep -E '(^|\.)aether_' | xargs -n1 terraform state rm`)
+   (`terraform state list | grep -E '(^|\.)aether_[a-z0-9_]+\.[A-Za-z0-9_-]+(\[[^]]*\])?$' | while IFS= read -r a; do terraform state rm "$a"; done`)
    and import each resource under its new type with an `import` block (same
    IDs). Imports do not restore `norkeel_registry_robot_account.secret` or
    `norkeel_webhook.secret`, so anything that reads them must be updated, and a

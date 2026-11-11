@@ -20,7 +20,7 @@ jobs:
   acceptance:
     name: acceptance (${{ matrix.engine }})
     # Forks have no token and must never run this.
-    if: github.repository_owner == 'norkeel'
+    if: github.repository == 'norkeel/terraform-provider-norkeel'
     runs-on: ubuntu-latest
     timeout-minutes: 150
     strategy:

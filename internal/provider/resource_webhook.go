@@ -54,12 +54,12 @@ type webhookModel struct {
 	UpdatedAt    types.String `tfsdk:"updated_at"`
 }
 
-// Metadata names the resource norkeel_webhook.
-// MoveState accepts state moved from the pre-rename aether_webhook type.
+// MoveState accepts state moved from the pre-rename aether_* type.
 func (r *webhookResource) MoveState(ctx context.Context) []resource.StateMover {
-	return moveStateFromLegacy(ctx, r, "webhook")
+	return moveStateFromLegacy(ctx, r)
 }
 
+// Metadata names the resource norkeel_webhook.
 func (r *webhookResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_webhook"
 }

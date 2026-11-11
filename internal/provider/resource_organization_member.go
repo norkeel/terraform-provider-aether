@@ -61,12 +61,12 @@ type organizationMemberModel struct {
 	CreatedAt  types.String `tfsdk:"created_at"`
 }
 
-// Metadata names the resource norkeel_organization_member.
-// MoveState accepts state moved from the pre-rename aether_organization_member type.
+// MoveState accepts state moved from the pre-rename aether_* type.
 func (r *organizationMemberResource) MoveState(ctx context.Context) []resource.StateMover {
-	return moveStateFromLegacy(ctx, r, "organization_member")
+	return moveStateFromLegacy(ctx, r)
 }
 
+// Metadata names the resource norkeel_organization_member.
 func (r *organizationMemberResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_organization_member"
 }

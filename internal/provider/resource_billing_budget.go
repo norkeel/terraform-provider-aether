@@ -55,12 +55,12 @@ type billingBudgetModel struct {
 	UpdatedAt       types.String  `tfsdk:"updated_at"`
 }
 
-// Metadata names the resource norkeel_billing_budget.
-// MoveState accepts state moved from the pre-rename aether_billing_budget type.
+// MoveState accepts state moved from the pre-rename aether_* type.
 func (r *billingBudgetResource) MoveState(ctx context.Context) []resource.StateMover {
-	return moveStateFromLegacy(ctx, r, "billing_budget")
+	return moveStateFromLegacy(ctx, r)
 }
 
+// Metadata names the resource norkeel_billing_budget.
 func (r *billingBudgetResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_billing_budget"
 }
