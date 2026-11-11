@@ -10,12 +10,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &costBreakdownDataSource{}
 
-// NewCostBreakdownDataSource is aether_cost_breakdown (T14-10).
+// NewCostBreakdownDataSource is norkeel_cost_breakdown (T14-10).
 func NewCostBreakdownDataSource() datasource.DataSource { return &costBreakdownDataSource{} }
 
 type costBreakdownDataSource struct{ pd *providerData }

@@ -352,7 +352,7 @@ func (cs *clusterStore) clusterJSON(c *fakeCluster, status string) map[string]an
 	// like drift; endpoint only once the operator would report one.
 	short := c.id[:8]
 	m["capi_cluster_name"] = "capi-" + short
-	m["keycloak_realm"] = "aether"
+	m["keycloak_realm"] = "norkeel"
 	m["harbor_project"] = "aether-acme"
 	m["ceph_pool"] = "pool-" + short
 	m["lb_subnet"] = "10.64.0.0/24"

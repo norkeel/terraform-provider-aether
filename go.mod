@@ -1,4 +1,4 @@
-module github.com/plane-shift/terraform-provider-aether
+module github.com/norkeel/terraform-provider-norkeel
 
 go 1.26.5
 

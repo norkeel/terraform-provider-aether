@@ -12,10 +12,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
-// These tests drive aether_registry_cleanup_policy
+// These tests drive norkeel_registry_cleanup_policy
 // (internal/provider/resource_registry_cleanup_policy.go, registered in
 // provider.go's Resources() as NewRegistryCleanupPolicyResource) through a
 // real terraform (or tofu) binary against the in-process fake
@@ -38,7 +38,7 @@ import (
 // Found" diagnostic - the expected RED state.
 
 const (
-	cleanupPolicyResource = "aether_registry_cleanup_policy.c"
+	cleanupPolicyResource = "norkeel_registry_cleanup_policy.c"
 	policiesListRE        = `/registry/cleanup-policies$`
 	policyOneRE           = `/registry/cleanup-policies/[^/]+$`
 )
@@ -63,8 +63,8 @@ func cleanupPolicyHCL(name string, conditions []map[string]string, extra ...stri
 		condParts[i] = conditionHCL(c)
 	}
 	return fmt.Sprintf(`
-provider "aether" {}
-resource "aether_registry_cleanup_policy" "c" {
+provider "norkeel" {}
+resource "norkeel_registry_cleanup_policy" "c" {
   name       = %q
   conditions = [%s]
 %s

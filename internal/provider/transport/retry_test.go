@@ -19,13 +19,13 @@ func TestBearerHeaderIsAdded(t *testing.T) {
 		got.Store(r.Header.Get("Authorization"))
 	}))
 	defer srv.Close()
-	c := &http.Client{Transport: New("aether_x", http.DefaultTransport)}
+	c := &http.Client{Transport: New("norkeel_x", http.DefaultTransport)}
 	resp, err := c.Get(srv.URL)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer resp.Body.Close()
-	if v, _ := got.Load().(string); v != "Bearer aether_x" {
+	if v, _ := got.Load().(string); v != "Bearer norkeel_x" {
 		t.Fatalf("Authorization = %q", v)
 	}
 }

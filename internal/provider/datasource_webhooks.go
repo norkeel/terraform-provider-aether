@@ -11,13 +11,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &webhooksDataSource{}
 
-// NewWebhooksDataSource is aether_webhooks (T14-2).
+// NewWebhooksDataSource is norkeel_webhooks (T14-2).
 func NewWebhooksDataSource() datasource.DataSource { return &webhooksDataSource{} }
 
 type webhooksDataSource struct{ pd *providerData }

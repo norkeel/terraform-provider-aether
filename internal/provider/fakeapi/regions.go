@@ -13,7 +13,7 @@ package fakeapi
 //
 // Regions: exactly one region on every instance - eu-fi / "Europe (Finland)" /
 // "Helsinki" - always available=true. This fake models a single
-// eu-fi-serving instance; there is no AETHER_REGION knob because nothing in
+// eu-fi-serving instance; there is no NORKEEL_REGION knob because nothing in
 // this provider exercises a second region.
 //
 // K8s-versions: newest first, "Latest" on the FIRST item only, every other

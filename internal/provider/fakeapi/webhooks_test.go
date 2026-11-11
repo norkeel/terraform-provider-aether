@@ -488,7 +488,7 @@ func TestWebhookListPaginatesByID(t *testing.T) {
 // SetRepeatingWebhookCursor (ruling T14-15 support): the forced cursor is
 // served as next_cursor even though the seeded list has just one webhook and
 // the page is far from full - the "always answers the same next_cursor" fake
-// behaviour a provider-level test uses to prove aether_webhooks' collectAll
+// behaviour a provider-level test uses to prove norkeel_webhooks' collectAll
 // pager fails loud on a repeated cursor instead of silently truncating.
 func TestWebhookListRepeatingCursorOverridesFullPageRule(t *testing.T) {
 	s := newClusterFake(t)

@@ -11,7 +11,7 @@ import (
 // NewClustersDataSource (datasource_clusters.go).
 
 // Basic read by id. Fails today (RED) with "does not support data source
-// \"aether_cluster\"". Once implemented, fails against a wrong
+// \"norkeel_cluster\"". Once implemented, fails against a wrong
 // implementation if the extracted flatten (T13-14: clusterResource.flatten is
 // a method, not a free function yet) drops or mis-types any attribute, or if
 // `id` is looked up via GetClusterWithResponse but decodes the wrong id.
@@ -24,24 +24,24 @@ func TestDataSourceCluster_ByIDReadsEveryClusterAttribute(t *testing.T) {
 		Steps: []resource.TestStep{{
 			Config: clusterDataSourceHCL(cid, ""),
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_cluster.c", "id", cid),
-				resource.TestCheckResourceAttr("data.aether_cluster.c", "name", "prod"),
-				resource.TestCheckResourceAttr("data.aether_cluster.c", "region", "eu-fi"),
-				resource.TestCheckResourceAttr("data.aether_cluster.c", "k8s_version", "1.37.2"),
-				resource.TestCheckResourceAttr("data.aether_cluster.c", "public_endpoint", "false"),
-				resource.TestCheckResourceAttr("data.aether_cluster.c", "status", "running"),
-				resource.TestCheckResourceAttr("data.aether_cluster.c", "observed_kubernetes_version", "1.37.2"),
-				resource.TestCheckResourceAttrSet("data.aether_cluster.c", "endpoint"),
-				resource.TestCheckResourceAttrSet("data.aether_cluster.c", "capi_cluster_name"),
-				resource.TestCheckResourceAttrSet("data.aether_cluster.c", "keycloak_realm"),
-				resource.TestCheckResourceAttrSet("data.aether_cluster.c", "harbor_project"),
-				resource.TestCheckResourceAttrSet("data.aether_cluster.c", "ceph_pool"),
-				resource.TestCheckResourceAttrSet("data.aether_cluster.c", "lb_subnet"),
-				resource.TestCheckResourceAttrSet("data.aether_cluster.c", "worker_subnet"),
-				resource.TestCheckResourceAttrSet("data.aether_cluster.c", "created_at"),
-				resource.TestCheckResourceAttrSet("data.aether_cluster.c", "updated_at"),
-				resource.TestCheckNoResourceAttr("data.aether_cluster.c", "plan"),
-				resource.TestCheckNoResourceAttr("data.aether_cluster.c", "status_message"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster.c", "id", cid),
+				resource.TestCheckResourceAttr("data.norkeel_cluster.c", "name", "prod"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster.c", "region", "eu-fi"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster.c", "k8s_version", "1.37.2"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster.c", "public_endpoint", "false"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster.c", "status", "running"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster.c", "observed_kubernetes_version", "1.37.2"),
+				resource.TestCheckResourceAttrSet("data.norkeel_cluster.c", "endpoint"),
+				resource.TestCheckResourceAttrSet("data.norkeel_cluster.c", "capi_cluster_name"),
+				resource.TestCheckResourceAttrSet("data.norkeel_cluster.c", "keycloak_realm"),
+				resource.TestCheckResourceAttrSet("data.norkeel_cluster.c", "harbor_project"),
+				resource.TestCheckResourceAttrSet("data.norkeel_cluster.c", "ceph_pool"),
+				resource.TestCheckResourceAttrSet("data.norkeel_cluster.c", "lb_subnet"),
+				resource.TestCheckResourceAttrSet("data.norkeel_cluster.c", "worker_subnet"),
+				resource.TestCheckResourceAttrSet("data.norkeel_cluster.c", "created_at"),
+				resource.TestCheckResourceAttrSet("data.norkeel_cluster.c", "updated_at"),
+				resource.TestCheckNoResourceAttr("data.norkeel_cluster.c", "plan"),
+				resource.TestCheckNoResourceAttr("data.norkeel_cluster.c", "status_message"),
 			),
 		}},
 	})
@@ -93,8 +93,8 @@ func TestDataSourceCluster_ByNameOneMatchIsFound(t *testing.T) {
 		Steps: []resource.TestStep{{
 			Config: clusterDataSourceHCL("", "prod"),
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_cluster.c", "id", cid),
-				resource.TestCheckResourceAttr("data.aether_cluster.c", "name", "prod"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster.c", "id", cid),
+				resource.TestCheckResourceAttr("data.norkeel_cluster.c", "name", "prod"),
 			),
 		}},
 	})
@@ -162,7 +162,7 @@ func TestDataSourceCluster_BothIDAndNameIsAConfigError(t *testing.T) {
 	}
 }
 
-// P1: aether_clusters walks two full pages plus the trailing empty page.
+// P1: norkeel_clusters walks two full pages plus the trailing empty page.
 // Seeds EXACTLY 200 clusters so limit=100 produces [100][100][] - 3 requests
 // - and pins T13-1's ruling that requests send limit=100 and the returned
 // next_cursor is echoed back as the cursor query param on requests 2 and 3.
@@ -180,11 +180,11 @@ func TestDataSourceClusters_WalksTwoFullPagesPlusTrailingEmptyPage(t *testing.T)
 		IsUnitTest:               true,
 		ProtoV6ProviderFactories: factories(),
 		Steps: []resource.TestStep{{
-			Config: dsProviderBlock + `data "aether_clusters" "all" {}`,
+			Config: dsProviderBlock + `data "norkeel_clusters" "all" {}`,
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_clusters.all", "clusters.#", "200"),
-				resource.TestCheckResourceAttr("data.aether_clusters.all", "clusters.0.id", ids[0]),
-				resource.TestCheckResourceAttr("data.aether_clusters.all", "clusters.199.id", ids[199]),
+				resource.TestCheckResourceAttr("data.norkeel_clusters.all", "clusters.#", "200"),
+				resource.TestCheckResourceAttr("data.norkeel_clusters.all", "clusters.0.id", ids[0]),
+				resource.TestCheckResourceAttr("data.norkeel_clusters.all", "clusters.199.id", ids[199]),
 			),
 		}},
 	})
@@ -234,7 +234,7 @@ func TestDataSourceCluster_UpperCaseIDIsRejectedWithZeroRequests(t *testing.T) {
 		}},
 	})
 	// requestsMatching, not a total-request-count comparison: Configure's own
-	// org auto-resolution (AETHER_ORGANIZATION_ID left empty by setupFake)
+	// org auto-resolution (NORKEEL_ORGANIZATION_ID left empty by setupFake)
 	// legitimately issues a request of its own, which a total-count check
 	// would misattribute to this test's id.
 	if reqs := requestsMatching(api, "GET", oneClusterRE); len(reqs) != 0 {
@@ -257,7 +257,7 @@ func TestDataSourceClusters_RepeatedCursorErrorsInsteadOfDoublingTheList(t *test
 		IsUnitTest:               true,
 		ProtoV6ProviderFactories: factories(),
 		Steps: []resource.TestStep{{
-			Config:      dsProviderBlock + `data "aether_clusters" "all" {}`,
+			Config:      dsProviderBlock + `data "norkeel_clusters" "all" {}`,
 			ExpectError: loose("pagination cursor"),
 		}},
 	})

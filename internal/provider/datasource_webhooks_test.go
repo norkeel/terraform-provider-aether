@@ -1,6 +1,6 @@
 package provider_test
 
-// Tests for the aether_webhooks data source (datasource_webhooks.go, T14-2),
+// Tests for the norkeel_webhooks data source (datasource_webhooks.go, T14-2),
 // registered as NewWebhooksDataSource in provider.go's DataSources().
 
 import (
@@ -27,11 +27,11 @@ func checkAbsentFromStateSubstring(addr, substr string) resource.TestCheckFunc {
 	}
 }
 
-const webhooksDataSource = "data.aether_webhooks.w"
+const webhooksDataSource = "data.norkeel_webhooks.w"
 
 const webhooksDSHCL = `
-provider "aether" {}
-data "aether_webhooks" "w" {}
+provider "norkeel" {}
+data "norkeel_webhooks" "w" {}
 `
 
 // Fails if any of id/url/description/events/enabled/created_at/updated_at is

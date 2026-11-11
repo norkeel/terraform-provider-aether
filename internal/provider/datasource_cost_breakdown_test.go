@@ -1,6 +1,6 @@
 package provider_test
 
-// Tests for the aether_cost_breakdown data source
+// Tests for the norkeel_cost_breakdown data source
 // (datasource_cost_breakdown.go, T14-10), registered as
 // NewCostBreakdownDataSource in provider.go's DataSources().
 
@@ -10,14 +10,14 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
-const costBreakdownDataSource = "data.aether_cost_breakdown.b"
+const costBreakdownDataSource = "data.norkeel_cost_breakdown.b"
 
 const costBreakdownDSHCL = `
-provider "aether" {}
-data "aether_cost_breakdown" "b" {}
+provider "norkeel" {}
+data "norkeel_cost_breakdown" "b" {}
 `
 
 // CB1. Fails if a per-pool autoscaling line and a STORAGE line (the point of

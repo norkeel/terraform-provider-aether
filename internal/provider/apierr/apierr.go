@@ -1,4 +1,4 @@
-// Package apierr turns Aether API error responses into Terraform diagnostics.
+// Package apierr turns Norkeel API error responses into Terraform diagnostics.
 //
 // The wire format is measured, not assumed - aether-api
 // internal/api/handler/response.go and internal/api/middleware/requestid.go at
@@ -68,9 +68,9 @@ type Error struct {
 
 func (e *Error) Error() string {
 	if e.Code != "" {
-		return fmt.Sprintf("aether api: %d %s: %s", e.Status, e.Code, e.Message)
+		return fmt.Sprintf("norkeel api: %d %s: %s", e.Status, e.Code, e.Message)
 	}
-	return fmt.Sprintf("aether api: %d: %s", e.Status, e.Message)
+	return fmt.Sprintf("norkeel api: %d: %s", e.Status, e.Message)
 }
 
 // envelope matches ErrorResponse / ErrorBody in aether-api's
@@ -122,7 +122,7 @@ func IsNotFound(err error) bool {
 func ToDiagnostics(err error, diags *diag.Diagnostics, attrPrefix path.Path) {
 	var e *Error
 	if !errors.As(err, &e) {
-		diags.AddError("Aether API request failed", err.Error())
+		diags.AddError("Norkeel API request failed", err.Error())
 		return
 	}
 	rid := ""
@@ -142,7 +142,7 @@ func ToDiagnostics(err error, diags *diag.Diagnostics, attrPrefix path.Path) {
 		diags.AddError("API tokens cannot perform this operation",
 			fmt.Sprintf("%s%s. Perform this operation in the portal, signed in with an account that has the required organization role.", e.Message, rid))
 	case e.Status == http.StatusUnauthorized || e.Status == http.StatusForbidden:
-		diags.AddError("Aether API rejected the request",
+		diags.AddError("Norkeel API rejected the request",
 			fmt.Sprintf("%d %s%s. Check api_token (created in the portal) and, if set, organization_id.", e.Status, e.Message, rid))
 	case e.Status == http.StatusUnprocessableEntity && len(e.Fields) > 0:
 		for _, f := range e.Fields {
@@ -155,7 +155,7 @@ func ToDiagnostics(err error, diags *diag.Diagnostics, attrPrefix path.Path) {
 	case e.Status == http.StatusConflict:
 		diags.AddError("Conflict", e.Message+rid)
 	default:
-		diags.AddError("Aether API error", fmt.Sprintf("%d %s: %s%s", e.Status, e.Code, e.Message, rid))
+		diags.AddError("Norkeel API error", fmt.Sprintf("%d %s: %s%s", e.Status, e.Code, e.Message, rid))
 	}
 }
 

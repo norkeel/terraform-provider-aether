@@ -12,12 +12,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &clusterVolumesDataSource{}
 
-// NewClusterVolumesDataSource returns data.aether_cluster_volumes.
+// NewClusterVolumesDataSource returns data.norkeel_cluster_volumes.
 func NewClusterVolumesDataSource() datasource.DataSource { return &clusterVolumesDataSource{} }
 
 type clusterVolumesDataSource struct{ pd *providerData }

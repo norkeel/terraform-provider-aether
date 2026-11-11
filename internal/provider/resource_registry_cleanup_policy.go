@@ -32,7 +32,7 @@ var (
 	_ resource.ResourceWithImportState = &cleanupPolicyResource{}
 )
 
-// NewRegistryCleanupPolicyResource returns the aether_registry_cleanup_policy resource.
+// NewRegistryCleanupPolicyResource returns the norkeel_registry_cleanup_policy resource.
 func NewRegistryCleanupPolicyResource() resource.Resource { return &cleanupPolicyResource{} }
 
 // cleanupPolicyResource manages one registry cleanup policy. There is no GET
@@ -43,7 +43,7 @@ func NewRegistryCleanupPolicyResource() resource.Resource { return &cleanupPolic
 // (T11-15).
 type cleanupPolicyResource struct{ pd *providerData }
 
-// cleanupPolicyModel is the aether_registry_cleanup_policy state.
+// cleanupPolicyModel is the norkeel_registry_cleanup_policy state.
 type cleanupPolicyModel struct {
 	ID                types.String `tfsdk:"id"`
 	Name              types.String `tfsdk:"name"`
@@ -117,17 +117,17 @@ type cleanupPolicyWire struct {
 	LastRunFreedBytes *int64     `json:"last_run_freed_bytes"`
 }
 
-// Metadata names the resource aether_registry_cleanup_policy.
+// Metadata names the resource norkeel_registry_cleanup_policy.
 func (r *cleanupPolicyResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_registry_cleanup_policy"
 }
 
-// Schema defines aether_registry_cleanup_policy (T11-9).
+// Schema defines norkeel_registry_cleanup_policy (T11-9).
 func (r *cleanupPolicyResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "A cleanup policy of the organization's registry: artifacts matching ALL `conditions` in the repositories matched by `repo_scope` are deleted (or protected) on `schedule`. " +
 			"A policy with `action = \"delete\"`, a `nightly` or `weekly` schedule and `enabled = true` is due immediately and the platform runs it within about a minute of the apply. Test with `action = \"protect\"` or `enabled = false` first. " +
-			"`protect` policies are not consulted by the scheduler today (aether-api#309). Policies survive destroying `aether_registry`.",
+			"`protect` policies are not consulted by the scheduler today (aether-api#309). Policies survive destroying `norkeel_registry`.",
 		Attributes: map[string]schema.Attribute{
 			"id": immutableComputed("Cleanup policy UUID."),
 			"name": schema.StringAttribute{Required: true,
@@ -306,7 +306,7 @@ func (r *cleanupPolicyResource) Create(ctx context.Context, req resource.CreateR
 	}
 	var created cleanupPolicyWire
 	if err := json.Unmarshal(res.Body, &created); err != nil || created.ID == "" {
-		resp.Diagnostics.AddError("Aether API created the cleanup policy but returned no usable body",
+		resp.Diagnostics.AddError("Norkeel API created the cleanup policy but returned no usable body",
 			describeUndecodable(res.HTTPResponse, res.Status(), err, "id")+". The policy was probably created but is not recorded in state: delete it through the API or the portal, or import it by its id.")
 		return
 	}
@@ -367,7 +367,7 @@ func (r *cleanupPolicyResource) Update(ctx context.Context, req resource.UpdateR
 	}
 	var updated cleanupPolicyWire
 	if err := json.Unmarshal(res.Body, &updated); err != nil || updated.ID == "" {
-		resp.Diagnostics.AddError("Aether API accepted the cleanup policy update but returned no usable body",
+		resp.Diagnostics.AddError("Norkeel API accepted the cleanup policy update but returned no usable body",
 			describeUndecodable(res.HTTPResponse, res.Status(), err, "id")+". The update was probably applied, but state still holds the previous values: apply again (the update is idempotent).")
 		return
 	}
@@ -437,8 +437,8 @@ func (r *cleanupPolicyResource) find(ctx context.Context, id string) (*cleanupPo
 }
 
 // listCleanupPolicies reads GET /cleanup-policies (unpaginated, contract §10)
-// raw. Shared by the aether_registry_cleanup_policy resource and the
-// aether_registry_cleanup_policies data source.
+// raw. Shared by the norkeel_registry_cleanup_policy resource and the
+// norkeel_registry_cleanup_policies data source.
 func listCleanupPolicies(ctx context.Context, pd *providerData) ([]cleanupPolicyWire, diag.Diagnostics) {
 	var diags diag.Diagnostics
 	res, err := pd.Client.ListCleanupPoliciesWithResponse(ctx, pd.orgID)
@@ -454,7 +454,7 @@ func listCleanupPolicies(ctx context.Context, pd *providerData) ([]cleanupPolicy
 		Items *[]cleanupPolicyWire `json:"items"`
 	}
 	if err := json.Unmarshal(res.Body, &list); err != nil || list.Items == nil {
-		diags.AddError("Aether API returned no usable cleanup policy list", describeUndecodable(res.HTTPResponse, res.Status(), err, "items"))
+		diags.AddError("Norkeel API returned no usable cleanup policy list", describeUndecodable(res.HTTPResponse, res.Status(), err, "items"))
 		return nil, diags
 	}
 	return *list.Items, diags

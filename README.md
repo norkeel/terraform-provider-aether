@@ -1,9 +1,9 @@
-# Terraform / OpenTofu provider for Aether
+# Terraform / OpenTofu provider for Norkeel
 
-Manage [Aether](https://zenyth.aetherplatform.cloud) managed Kubernetes clusters, node pools,
+Manage [Norkeel](https://zenyth.aetherplatform.cloud) managed Kubernetes clusters, node pools,
 network policy, organization membership, webhooks, the container registry and the billing
 budget as code. The provider works with **Terraform 1.5+** and **OpenTofu 1.6+** and is
-published under the same address, `plane-shift/aether`, on both registries.
+published under the same address, `norkeel/norkeel`, on both registries.
 
 Full documentation for every resource and data source is in [`docs/`](docs/index.md)
 (rendered on the Terraform and OpenTofu registries).
@@ -13,15 +13,15 @@ Full documentation for every resource and data source is in [`docs/`](docs/index
 ```hcl
 terraform {
   required_providers {
-    aether = {
-      source  = "plane-shift/aether"
-      version = "~> 0.1"
+    norkeel = {
+      source  = "norkeel/norkeel"
+      version = "~> 0.2"
     }
   }
 }
 
-provider "aether" {
-  # api_token defaults to AETHER_API_TOKEN
+provider "norkeel" {
+  # api_token defaults to NORKEEL_API_TOKEN
 }
 ```
 
@@ -30,11 +30,11 @@ same address on `registry.opentofu.org`. No other change is needed to switch eng
 
 ## Prerequisite: an API token
 
-Create an API token in the Aether portal (Settings → API Tokens). Choose the role **Admin** (the default): the provider manages members, including owners, and an admin token is the only role that may. Pass it as
-`api_token` or `AETHER_API_TOKEN`. A token belongs to one organization, and the provider
+Create an API token in the Norkeel portal (Settings → API Tokens). Choose the role **Admin** (the default): the provider manages members, including owners, and an admin token is the only role that may. Pass it as
+`api_token` or `NORKEEL_API_TOKEN`. A token belongs to one organization, and the provider
 manages that organization's resources (`organization_id` is resolved from the token; setting
 it explicitly is validated against the token). Tokens are created and revoked in the portal
-only — there is deliberately no `aether_api_token` resource.
+only — there is deliberately no `norkeel_api_token` resource.
 
 Only an organization **owner** can create an API token. The API enforces organization roles:
 a token acts with the role chosen when it is created (Viewer, Member or Admin; Admin is the
@@ -47,7 +47,7 @@ operation` (`403 token_not_permitted`), with the API message and request id in t
 
 ## Endpoint
 
-| Environment | `endpoint` / `AETHER_ENDPOINT`                  |
+| Environment | `endpoint` / `NORKEEL_ENDPOINT`                  |
 |-------------|-------------------------------------------------|
 | Production  | `https://api.aetherplatform.cloud` (default)    |
 | Dev         | `https://dev.api.aetherplatform.cloud`          |
@@ -58,8 +58,8 @@ token is sent on every request.
 ## ⚠ State contains secrets
 
 Terraform/OpenTofu state stores, in plain text: the cluster admin kubeconfig
-(`data.aether_kubeconfig`), registry robot-account secrets, the registry's default robot
-credential (`aether_registry.robot_secret`) and webhook signing secrets. Use an encrypted
+(`data.norkeel_kubeconfig`), registry robot-account secrets, the registry's default robot
+credential (`norkeel_registry.robot_secret`) and webhook signing secrets. Use an encrypted
 remote backend with restricted access, and never commit state files.
 
 ## Measured platform behaviours
@@ -67,23 +67,23 @@ remote backend with restricted access, and never commit state files.
 The provider was built against measured API behaviour, not only the OpenAPI document. Read
 the resource page before relying on these:
 
-- **`aether_cluster`** — `public_endpoint` defaults to `true` and bills one public IP per month.
-- **`aether_node_pool`** — a vCPU/memory budget with max above min makes the pool autoscaling
+- **`norkeel_cluster`** — `public_endpoint` defaults to `true` and bills one public IP per month.
+- **`norkeel_node_pool`** — a vCPU/memory budget with max above min makes the pool autoscaling
   (hourly billing); `name`, `vcpus`, `memory_gb`, `disk_gb` replace the pool;
   `drain_timeout_seconds` cannot be removed once set (taint to recreate).
-- **`aether_cluster_network`** — creating it overwrites the portal policy; destroying it opens
+- **`norkeel_cluster_network`** — creating it overwrites the portal policy; destroying it opens
   the endpoint to every source address.
-- **`aether_organization`** — import-only; **`aether_organization_member`** role changes replace
+- **`norkeel_organization`** — import-only; **`norkeel_organization_member`** role changes replace
   the membership, the last owner cannot be removed (checked by the provider and refused by the
   API), and emails are compared case-insensitively (a case variant of an existing member is a
   `409`).
-- **`aether_webhook`** — the secret is returned only on create/rotation; rotate with `rotate_secret`.
-- **`aether_registry`** — destroying it deletes every robot account; images are deleted only with
+- **`norkeel_webhook`** — the secret is returned only on create/rotation; rotate with `rotate_secret`.
+- **`norkeel_registry`** — destroying it deletes every robot account; images are deleted only with
   `purge_on_destroy`. Order robot accounts with `depends_on`.
-- **`aether_registry_cleanup_policy`** — an enabled `delete` policy runs within about a minute of
+- **`norkeel_registry_cleanup_policy`** — an enabled `delete` policy runs within about a minute of
   apply; start with `protect` or `enabled = false`.
-- **`aether_billing_budget`** — advisory only; alerts fire once per threshold per month.
-- **`data.aether_audit_log`** — returns one page (the newest `limit` events).
+- **`norkeel_billing_budget`** — advisory only; alerts fire once per threshold per month.
+- **`data.norkeel_audit_log`** — returns one page (the newest `limit` events).
 
 ## Development
 
@@ -99,11 +99,11 @@ make build
 - Every example under `examples/` must pass `terraform validate` and `tofu validate` (not yet
   enforced by CI — validate by hand with a local build, see below).
 - The API client in `internal/client` is generated from `api/openapi.yaml`, vendored from
-  `plane-shift/aether-api` at the commit in `OPENAPI_REF`. `make openapi` re-vendors it and
+  `norkeel/aether-api` at the commit in `OPENAPI_REF`. `make openapi` re-vendors it and
   regenerates the client; it needs an authenticated `gh` CLI and Python 3 with PyYAML
   (`scripts/fetch-openapi.sh <full-sha>` moves the pin).
 - `make testacc` runs the acceptance suite against a real environment (`TF_ACC=1`, dev only,
-  a dedicated organization and `AETHER_API_TOKEN`); it creates and destroys real clusters.
+  a dedicated organization and `NORKEEL_API_TOKEN`); it creates and destroys real clusters.
   Set `TF_ACC_TERRAFORM_PATH` (and `TF_ACC_PROVIDER_HOST=registry.opentofu.org`) to run it
   with OpenTofu.
 
@@ -113,7 +113,7 @@ To use a local build, point a CLI config at it:
 # ~/.terraformrc (Terraform) or ~/.tofurc (OpenTofu)
 provider_installation {
   dev_overrides {
-    "plane-shift/aether" = "/path/to/dir/with/terraform-provider-aether"
+    "norkeel/norkeel" = "/path/to/dir/with/terraform-provider-norkeel"
   }
   direct {}
 }

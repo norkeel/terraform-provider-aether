@@ -13,10 +13,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
-// These tests drive aether_registry (internal/provider/resource_registry.go,
+// These tests drive norkeel_registry (internal/provider/resource_registry.go,
 // registered in provider.go's Resources() as NewRegistryResource) through a
 // real terraform (or tofu) binary against the in-process fake
 // (fakeapi/registry.go), under the controller rulings T11-0..T11-16 of
@@ -37,16 +37,16 @@ import (
 // able to fail on a wrong implementation, not just a missing one.
 
 const (
-	registryResource = "aether_registry.r"
+	registryResource = "norkeel_registry.r"
 	registryOneRE    = `/registry$`
 )
 
-// registryHCL renders the aether_registry under test; extra lines go inside
+// registryHCL renders the norkeel_registry under test; extra lines go inside
 // the block (there are no Required attributes, so the block can be empty).
 func registryHCL(extra ...string) string {
 	return fmt.Sprintf(`
-provider "aether" {}
-resource "aether_registry" "r" {
+provider "norkeel" {}
+resource "norkeel_registry" "r" {
 %s
 }
 `, strings.Join(extra, "\n"))

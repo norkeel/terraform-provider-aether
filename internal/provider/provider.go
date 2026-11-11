@@ -17,9 +17,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/transport"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/transport"
 )
 
 const defaultEndpoint = "https://api.aetherplatform.cloud"
@@ -38,7 +38,7 @@ type providerData struct {
 	// state is data from outside this process.
 	orgID client.OrgID
 	// ownerDeleteMu serialises the last-owner guard + DELETE of owner
-	// memberships (aether_organization_member). One provider process serves
+	// memberships (norkeel_organization_member). One provider process serves
 	// one Terraform run, so this stops parallel owner deletes in a run from
 	// each seeing the other as "another owner"; it cannot reach the portal
 	// or another run (the API refuses that case itself with 409 last_owner
@@ -47,7 +47,7 @@ type providerData struct {
 	ownerDeleteMu sync.Mutex
 }
 
-type aetherProvider struct{ version string }
+type norkeelProvider struct{ version string }
 
 type providerModel struct {
 	APIToken       types.String `tfsdk:"api_token"`
@@ -56,35 +56,35 @@ type providerModel struct {
 }
 
 func New(version string) func() provider.Provider {
-	return func() provider.Provider { return &aetherProvider{version: version} }
+	return func() provider.Provider { return &norkeelProvider{version: version} }
 }
 
-func (p *aetherProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {
-	resp.TypeName = "aether"
+func (p *norkeelProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {
+	resp.TypeName = "norkeel"
 	resp.Version = p.version
 }
 
-func (p *aetherProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
+func (p *norkeelProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Manage Aether Kubernetes clusters, access and registry. Create an API token in the Aether portal first; the token belongs to one organization, which the provider uses for every resource.",
+		MarkdownDescription: "Manage Norkeel Kubernetes clusters, access and registry. Create an API token in the Norkeel portal first; the token belongs to one organization, which the provider uses for every resource.",
 		Attributes: map[string]schema.Attribute{
 			"api_token": schema.StringAttribute{
 				Optional: true, Sensitive: true,
-				MarkdownDescription: "API token created in the portal (`aether_…`). Falls back to `AETHER_API_TOKEN`.",
+				MarkdownDescription: "API token created in the portal (`aether_…`). Falls back to `NORKEEL_API_TOKEN`.",
 			},
 			"endpoint": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "API base URL. Defaults to `" + defaultEndpoint + "`; falls back to `AETHER_ENDPOINT`. Must be `https`, or `http` with a loopback host (`localhost` or a loopback IP) — the API token is sent on every request, so plain `http` to any other host is refused rather than leaking the credential in cleartext.",
+				MarkdownDescription: "API base URL. Defaults to `" + defaultEndpoint + "`; falls back to `NORKEEL_ENDPOINT`. Must be `https`, or `http` with a loopback host (`localhost` or a loopback IP) — the API token is sent on every request, so plain `http` to any other host is refused rather than leaking the credential in cleartext.",
 			},
 			"organization_id": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "Organization the token belongs to. Optional: resolved automatically when the token sees exactly one organization. Falls back to `AETHER_ORGANIZATION_ID`.",
+				MarkdownDescription: "Organization the token belongs to. Optional: resolved automatically when the token sees exactly one organization. Falls back to `NORKEEL_ORGANIZATION_ID`.",
 			},
 		},
 	}
 }
 
-func (p *aetherProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
+func (p *norkeelProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 	var cfg providerModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &cfg)...)
 	if resp.Diagnostics.HasError() {
@@ -102,14 +102,14 @@ func (p *aetherProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		value types.String
 		env   string
 	}{
-		{"api_token", cfg.APIToken, "AETHER_API_TOKEN"},
-		{"endpoint", cfg.Endpoint, "AETHER_ENDPOINT"},
-		{"organization_id", cfg.OrganizationID, "AETHER_ORGANIZATION_ID"},
+		{"api_token", cfg.APIToken, "NORKEEL_API_TOKEN"},
+		{"endpoint", cfg.Endpoint, "NORKEEL_ENDPOINT"},
+		{"organization_id", cfg.OrganizationID, "NORKEEL_ORGANIZATION_ID"},
 	} {
 		if u.value.IsUnknown() {
 			resp.Diagnostics.AddAttributeError(path.Root(u.attr),
 				"Unknown configuration value for "+u.attr,
-				fmt.Sprintf("The provider cannot create the Aether API client: %s is not yet known at configure time. "+
+				fmt.Sprintf("The provider cannot create the Norkeel API client: %s is not yet known at configure time. "+
 					"Either target apply the source of the value first, set the value statically, or use the %s environment variable.", u.attr, u.env))
 		}
 	}
@@ -117,12 +117,12 @@ func (p *aetherProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 
-	token := firstNonEmpty(cfg.APIToken.ValueString(), os.Getenv("AETHER_API_TOKEN"))
-	endpoint := firstNonEmpty(cfg.Endpoint.ValueString(), os.Getenv("AETHER_ENDPOINT"), defaultEndpoint)
-	orgID := firstNonEmpty(cfg.OrganizationID.ValueString(), os.Getenv("AETHER_ORGANIZATION_ID"))
+	token := firstNonEmpty(cfg.APIToken.ValueString(), os.Getenv("NORKEEL_API_TOKEN"))
+	endpoint := firstNonEmpty(cfg.Endpoint.ValueString(), os.Getenv("NORKEEL_ENDPOINT"), defaultEndpoint)
+	orgID := firstNonEmpty(cfg.OrganizationID.ValueString(), os.Getenv("NORKEEL_ORGANIZATION_ID"))
 	if token == "" {
 		resp.Diagnostics.AddAttributeError(path.Root("api_token"), "Missing API token",
-			"Set api_token in the provider block or the AETHER_API_TOKEN environment variable. Tokens are created in the Aether portal.")
+			"Set api_token in the provider block or the NORKEEL_API_TOKEN environment variable. Tokens are created in the Norkeel portal.")
 		return
 	}
 
@@ -164,7 +164,7 @@ func (p *aetherProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	if orgID != "" {
 		if err := orgUUID.UnmarshalText([]byte(orgID)); err != nil {
 			resp.Diagnostics.AddAttributeError(path.Root("organization_id"), "Invalid organization_id",
-				fmt.Sprintf("organization_id must be a UUID: %q is not (%s). Copy the id from the Aether portal, or omit organization_id and the provider resolves the organization the token belongs to.", orgID, err))
+				fmt.Sprintf("organization_id must be a UUID: %q is not (%s). Copy the id from the Norkeel portal, or omit organization_id and the provider resolves the organization the token belongs to.", orgID, err))
 			return
 		}
 		// Canonicalise, so state holds the same text the API round-trips.
@@ -181,7 +181,7 @@ func (p *aetherProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		// across different HOSTNAMES, ignoring the port, and it cannot strip
 		// a header a RoundTripper adds afterwards.
 		CheckRedirect: func(req *http.Request, _ []*http.Request) error {
-			return fmt.Errorf("refusing to follow a redirect to %s: the Aether API does not redirect, and following one would send the API token to that host", req.URL.Redacted())
+			return fmt.Errorf("refusing to follow a redirect to %s: the Norkeel API does not redirect, and following one would send the API token to that host", req.URL.Redacted())
 		},
 	}
 	c, err := client.NewClientWithResponses(endpoint, client.WithHTTPClient(httpClient))
@@ -194,7 +194,7 @@ func (p *aetherProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		// Validate the override: the token belongs to exactly one organization.
 		g, err := c.GetOrganizationWithResponse(ctx, orgUUID)
 		if err != nil {
-			resp.Diagnostics.AddError("Cannot reach the Aether API", fmt.Sprintf("GET %s/api/v1/organizations/%s: %s", endpoint, orgID, err))
+			resp.Diagnostics.AddError("Cannot reach the Norkeel API", fmt.Sprintf("GET %s/api/v1/organizations/%s: %s", endpoint, orgID, err))
 			return
 		}
 		// Three different causes, three different diagnostics. One fixed
@@ -204,7 +204,7 @@ func (p *aetherProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		switch {
 		case g.StatusCode() == http.StatusOK:
 		case g.StatusCode() == http.StatusUnauthorized || g.StatusCode() == http.StatusForbidden:
-			resp.Diagnostics.AddError("Aether API rejected the token",
+			resp.Diagnostics.AddError("Norkeel API rejected the token",
 				fmt.Sprintf("The API answered %s. Check api_token (created in the portal): this status means the TOKEN was rejected, not that the organization is unknown.", g.Status()))
 			return
 		case g.StatusCode() == http.StatusNotFound:
@@ -213,7 +213,7 @@ func (p *aetherProvider) Configure(ctx context.Context, req provider.ConfigureRe
 			return
 		default:
 			resp.Diagnostics.AddError("Cannot validate the organization",
-				fmt.Sprintf("The Aether API answered %s for GET %s/api/v1/organizations/%s. That is neither a rejected token nor an unknown organization, so nothing in the provider block needs changing; retry, or check the API's status.",
+				fmt.Sprintf("The Norkeel API answered %s for GET %s/api/v1/organizations/%s. That is neither a rejected token nor an unknown organization, so nothing in the provider block needs changing; retry, or check the API's status.",
 					g.Status(), endpoint, orgID))
 			return
 		}
@@ -221,21 +221,21 @@ func (p *aetherProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		// JSON content type. A 200 of HTML is a captive portal or a proxy
 		// error page, not a confirmation that this organization exists.
 		if g.JSON200 == nil {
-			resp.Diagnostics.AddError("Aether API answered 200 without a JSON body",
-				fmt.Sprintf("GET %s/api/v1/organizations/%s returned %s with content type %q. Check that endpoint points at the Aether API and not at a proxy or login page.",
+			resp.Diagnostics.AddError("Norkeel API answered 200 without a JSON body",
+				fmt.Sprintf("GET %s/api/v1/organizations/%s returned %s with content type %q. Check that endpoint points at the Norkeel API and not at a proxy or login page.",
 					endpoint, orgID, g.Status(), g.HTTPResponse.Header.Get("Content-Type")))
 			return
 		}
 	} else {
 		list, err := c.ListOrganizationsWithResponse(ctx, nil)
 		if err != nil {
-			resp.Diagnostics.AddError("Cannot reach the Aether API", fmt.Sprintf("GET %s/api/v1/organizations: %s", endpoint, err))
+			resp.Diagnostics.AddError("Cannot reach the Norkeel API", fmt.Sprintf("GET %s/api/v1/organizations: %s", endpoint, err))
 			return
 		}
 		switch list.StatusCode() {
 		case http.StatusOK:
 		case http.StatusUnauthorized, http.StatusForbidden:
-			resp.Diagnostics.AddError("Aether API rejected the token",
+			resp.Diagnostics.AddError("Norkeel API rejected the token",
 				"The API answered "+list.Status()+". Check api_token (created in the portal) and, if set, organization_id.")
 			return
 		default:
@@ -249,8 +249,8 @@ func (p *aetherProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		// Same guard on the auto-resolution path: without it a 200 carrying
 		// HTML dereferences a nil JSON200 and panics the provider.
 		if list.JSON200 == nil {
-			resp.Diagnostics.AddError("Aether API answered 200 without a JSON body",
-				fmt.Sprintf("GET %s/api/v1/organizations returned %s with content type %q. Check that endpoint points at the Aether API and not at a proxy or login page.",
+			resp.Diagnostics.AddError("Norkeel API answered 200 without a JSON body",
+				fmt.Sprintf("GET %s/api/v1/organizations returned %s with content type %q. Check that endpoint points at the Norkeel API and not at a proxy or login page.",
 					endpoint, list.Status(), list.HTTPResponse.Header.Get("Content-Type")))
 			return
 		}
@@ -271,14 +271,14 @@ func (p *aetherProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	resp.DataSourceData = data
 }
 
-func (p *aetherProvider) Resources(context.Context) []func() resource.Resource {
+func (p *norkeelProvider) Resources(context.Context) []func() resource.Resource {
 	return []func() resource.Resource{NewClusterResource, NewNodePoolResource, NewClusterNetworkResource,
 		NewOrganizationResource, NewOrganizationMemberResource, NewWebhookResource,
 		NewRegistryResource, NewRegistryRobotAccountResource, NewRegistryCleanupPolicyResource,
 		NewBillingBudgetResource}
 }
 
-func (p *aetherProvider) DataSources(context.Context) []func() datasource.DataSource {
+func (p *norkeelProvider) DataSources(context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		// Task 13 — cluster-scoped
 		NewOrganizationDataSource, NewRegionsDataSource, NewK8sVersionsDataSource,
@@ -310,7 +310,7 @@ func (p *aetherProvider) DataSources(context.Context) []func() datasource.DataSo
 // accepts "https:///api" (authority present but empty) and
 // "https:api.example.com" (an OPAQUE url, where the host ends up in u.Opaque
 // and u.Host stays empty). Both used to pass this check and then failed much
-// later as "Cannot reach the Aether API", which names neither the attribute
+// later as "Cannot reach the Norkeel API", which names neither the attribute
 // nor the typo that caused it.
 func endpointIsSafe(u *url.URL) bool {
 	if u.Hostname() == "" {

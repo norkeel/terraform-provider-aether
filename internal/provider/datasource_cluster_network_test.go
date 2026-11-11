@@ -13,13 +13,13 @@ import (
 // - no refactor needed here, unlike cluster/node-pool (T13-14).
 
 func networkDataSourceHCL(clusterID string) string {
-	return dsProviderBlock + `data "aether_cluster_network" "n" {
+	return dsProviderBlock + `data "norkeel_cluster_network" "n" {
   cluster_id = "` + clusterID + `"
 }`
 }
 
 // putRawNetwork PUTs …/network directly against the fake, bypassing the
-// aether_cluster_network resource entirely (this data source must work
+// norkeel_cluster_network resource entirely (this data source must work
 // standalone, without that resource ever having been applied).
 func putRawNetwork(t *testing.T, apiURL, token, clusterID, body string) {
 	t.Helper()
@@ -40,7 +40,7 @@ func putRawNetwork(t *testing.T, apiURL, token, clusterID, body string) {
 }
 
 // W1. Fails today (RED) with "does not support data source
-// \"aether_cluster_network\"". Once implemented, fails against a wrong
+// \"norkeel_cluster_network\"". Once implemented, fails against a wrong
 // implementation if authorized_cidrs/api_server_rate_limit/updated_at don't
 // round-trip through flattenClusterNetwork exactly as the resource's own
 // tests already pin (resource_cluster_network_test.go).
@@ -55,13 +55,13 @@ func TestDataSourceClusterNetwork_ReadsConfiguredPolicy(t *testing.T) {
 		Steps: []resource.TestStep{{
 			Config: networkDataSourceHCL(cid),
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_cluster_network.n", "cluster_id", cid),
-				resource.TestCheckResourceAttr("data.aether_cluster_network.n", "authorized_cidrs.#", "2"),
-				resource.TestCheckResourceAttr("data.aether_cluster_network.n", "authorized_cidrs.0", "10.0.0.0/24"),
-				resource.TestCheckResourceAttr("data.aether_cluster_network.n", "authorized_cidrs.1", "192.168.1.1/32"),
-				resource.TestCheckResourceAttr("data.aether_cluster_network.n", "api_server_rate_limit.max_connections_per_second", "50"),
-				resource.TestCheckResourceAttr("data.aether_cluster_network.n", "api_server_rate_limit.burst", "100"),
-				resource.TestCheckResourceAttrSet("data.aether_cluster_network.n", "updated_at"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_network.n", "cluster_id", cid),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_network.n", "authorized_cidrs.#", "2"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_network.n", "authorized_cidrs.0", "10.0.0.0/24"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_network.n", "authorized_cidrs.1", "192.168.1.1/32"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_network.n", "api_server_rate_limit.max_connections_per_second", "50"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_network.n", "api_server_rate_limit.burst", "100"),
+				resource.TestCheckResourceAttrSet("data.norkeel_cluster_network.n", "updated_at"),
 			),
 		}},
 	})
@@ -79,9 +79,9 @@ func TestDataSourceClusterNetwork_NeverConfiguredReadsTheSyntheticDefault(t *tes
 		Steps: []resource.TestStep{{
 			Config: networkDataSourceHCL(cid),
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_cluster_network.n", "authorized_cidrs.#", "0"),
-				resource.TestCheckNoResourceAttr("data.aether_cluster_network.n", "api_server_rate_limit.%"),
-				resource.TestCheckResourceAttr("data.aether_cluster_network.n", "updated_at", "0001-01-01T00:00:00Z"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_network.n", "authorized_cidrs.#", "0"),
+				resource.TestCheckNoResourceAttr("data.norkeel_cluster_network.n", "api_server_rate_limit.%"),
+				resource.TestCheckResourceAttr("data.norkeel_cluster_network.n", "updated_at", "0001-01-01T00:00:00Z"),
 			),
 		}},
 	})

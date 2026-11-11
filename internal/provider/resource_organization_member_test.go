@@ -12,10 +12,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
-// These tests drive aether_organization_member through a real terraform (or
+// These tests drive norkeel_organization_member through a real terraform (or
 // tofu) binary against the in-process fake (fakeapi/members.go), under the
 // controller rulings T9-1..T9-4, T9-9 and T9-10 of task-9-brief-amended.md.
 //
@@ -29,18 +29,18 @@ import (
 // TestMemberResource_DeletingTheLastOwnerIsRefused...).
 //
 // Symbols the coder provides: NewOrganizationMemberResource (type name
-// aether_organization_member), registered in provider.go.
+// norkeel_organization_member), registered in provider.go.
 
 const (
-	memberResource = "aether_organization_member.m"
+	memberResource = "norkeel_organization_member.m"
 	membersListRE  = `/members$`
 	memberOneRE    = `/members/[^/]+$`
 )
 
 func memberHCL(email, role string) string {
 	return fmt.Sprintf(`
-provider "aether" {}
-resource "aether_organization_member" "m" {
+provider "norkeel" {}
+resource "norkeel_organization_member" "m" {
   email = %q
   role  = %q
 }
@@ -1018,7 +1018,7 @@ func TestMemberResource_CaseVariantOfAnExistingMemberSurfacesThe409AndSavesNothi
 }
 
 // Fails if a 403 insufficient_role on a write is reported with the generic
-// "Aether API rejected the request ... Check api_token" diagnostic (the token
+// "Norkeel API rejected the request ... Check api_token" diagnostic (the token
 // was accepted; its organization role is what is short), or without the
 // API's message. ExpectError cannot assert an absence, so the step's error is
 // inspected by the case's ErrorCheck instead.
@@ -1044,7 +1044,7 @@ func TestMemberResource_InsufficientRoleOnAWriteSurfacesTheRoleDiagnosticNotTheT
 		"Use an API token with the Admin role (Settings → API Tokens); changing a member's role is open to no token and must be done in the portal, signed in as an organization owner."); !re.MatchString(msg) {
 		t.Fatalf("error lacks the role diagnostic (%s):\n%s", re, msg)
 	}
-	for _, generic := range []string{"api_token", "Aether API rejected the request"} {
+	for _, generic := range []string{"api_token", "Norkeel API rejected the request"} {
 		if strings.Contains(msg, generic) {
 			t.Fatalf("error carries the generic token diagnostic %q:\n%s", generic, msg)
 		}

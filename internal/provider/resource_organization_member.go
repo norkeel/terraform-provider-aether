@@ -17,7 +17,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
 )
 
 var (
@@ -40,7 +40,7 @@ const memberListMaxPages = 100
 // before any DELETE is sent, and against an API that does not refuse it.
 const lastOwnerRefusal = "refusing to remove the last owner: the organization would become unmanageable (roles and deletion need an owner login)"
 
-// NewOrganizationMemberResource returns the aether_organization_member resource.
+// NewOrganizationMemberResource returns the norkeel_organization_member resource.
 func NewOrganizationMemberResource() resource.Resource { return &organizationMemberResource{} }
 
 // organizationMemberResource manages one membership of the provider's
@@ -51,7 +51,7 @@ func NewOrganizationMemberResource() resource.Resource { return &organizationMem
 // (409 last_owner).
 type organizationMemberResource struct{ pd *providerData }
 
-// organizationMemberModel is the aether_organization_member state.
+// organizationMemberModel is the norkeel_organization_member state.
 type organizationMemberModel struct {
 	ID         types.String `tfsdk:"id"`
 	Email      types.String `tfsdk:"email"`
@@ -61,16 +61,16 @@ type organizationMemberModel struct {
 	CreatedAt  types.String `tfsdk:"created_at"`
 }
 
-// Metadata names the resource aether_organization_member.
+// Metadata names the resource norkeel_organization_member.
 func (r *organizationMemberResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_organization_member"
 }
 
-// Schema defines aether_organization_member.
+// Schema defines norkeel_organization_member.
 func (r *organizationMemberResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "A member of the provider's organization. " +
-			"The API creates the membership only. The address must already have an Aether login account (created through the portal invitation flow; aether-api #302), otherwise the member cannot sign in. Destroying the resource removes the membership and leaves the login account in place. " +
+			"The API creates the membership only. The address must already have an Norkeel login account (created through the portal invitation flow; aether-api #302), otherwise the member cannot sign in. Destroying the resource removes the membership and leaves the login account in place. " +
 			"There is no in-place update: changing `email` or `role` replaces the membership (it is removed, then created again with a new `id`). Do not set `create_before_destroy`: the new membership would be created while the old one still holds the address, which the API refuses (409). " +
 			"Member emails are compared case-insensitively: adding an address that differs from an existing member's only in letter case is refused (409). " +
 			"Removing or replacing the organization's last `owner` is refused, because nobody could change roles or delete the organization afterwards. The provider checks the member's current role before sending the removal, serialised within a single run; the API also refuses to remove the last owner (409 `last_owner`), which covers a concurrent removal in the portal or another run. " +
@@ -151,7 +151,7 @@ func (r *organizationMemberResource) Create(ctx context.Context, req resource.Cr
 		return
 	}
 	if res.JSON201 == nil {
-		resp.Diagnostics.AddError("Aether API accepted the member but returned no usable body",
+		resp.Diagnostics.AddError("Norkeel API accepted the member but returned no usable body",
 			describeNonJSON(res.HTTPResponse, res.Status())+". The membership was probably created, but it is not recorded in state: import it by its id, or remove it in the portal and apply again.")
 		return
 	}
@@ -186,7 +186,7 @@ func (r *organizationMemberResource) Read(ctx context.Context, req resource.Read
 		addAPIError(&resp.Diagnostics, g.StatusCode(), g.HTTPResponse.Header, g.Body, path.Empty())
 		return
 	case g.JSON200 == nil:
-		resp.Diagnostics.AddError("Aether API returned no usable organization member", describeNonJSON(g.HTTPResponse, g.Status()))
+		resp.Diagnostics.AddError("Norkeel API returned no usable organization member", describeNonJSON(g.HTTPResponse, g.Status()))
 		return
 	}
 	flattenMember(g.JSON200, &state)
@@ -244,7 +244,7 @@ func (r *organizationMemberResource) Delete(ctx context.Context, req resource.De
 		addAPIError(&resp.Diagnostics, g.StatusCode(), g.HTTPResponse.Header, g.Body, path.Empty())
 		return
 	case g.JSON200 == nil:
-		resp.Diagnostics.AddError("Aether API returned no usable organization member", describeNonJSON(g.HTTPResponse, g.Status()))
+		resp.Diagnostics.AddError("Norkeel API returned no usable organization member", describeNonJSON(g.HTTPResponse, g.Status()))
 		return
 	}
 	if g.JSON200.Role == client.MemberRoleOwner {
@@ -297,7 +297,7 @@ func (r *organizationMemberResource) guardLastOwner(ctx context.Context, id clie
 			addAPIError(&diags, res.StatusCode(), res.HTTPResponse.Header, res.Body, path.Empty())
 			return false, diags
 		case res.JSON200 == nil:
-			diags.AddError("Aether API returned no usable member list", describeNonJSON(res.HTTPResponse, res.Status()))
+			diags.AddError("Norkeel API returned no usable member list", describeNonJSON(res.HTTPResponse, res.Status()))
 			return false, diags
 		}
 		for _, m := range res.JSON200.Items {
@@ -313,7 +313,7 @@ func (r *organizationMemberResource) guardLastOwner(ctx context.Context, id clie
 		}
 		cursor, err := parseID(*next)
 		if err != nil {
-			diags.AddError("Aether API returned an unusable member list cursor", err.Error())
+			diags.AddError("Norkeel API returned an unusable member list cursor", err.Error())
 			return false, diags
 		}
 		// A cursor already followed would return the same page again: fail
@@ -330,7 +330,7 @@ func (r *organizationMemberResource) guardLastOwner(ctx context.Context, id clie
 		return true, diags
 	}
 	diags.AddAttributeError(path.Root("role"), "Cannot remove the organization's last owner", lastOwnerRefusal+
-		". Add another owner first (in the portal, or with another aether_organization_member), or remove this membership in the portal.")
+		". Add another owner first (in the portal, or with another norkeel_organization_member), or remove this membership in the portal.")
 	return false, diags
 }
 

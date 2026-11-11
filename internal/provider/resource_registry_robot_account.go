@@ -21,7 +21,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
 )
 
 var (
@@ -33,7 +33,7 @@ var (
 // robotPermissions is the create path's whole vocabulary (contract §6).
 var robotPermissions = []string{"push", "pull", "delete"}
 
-// NewRegistryRobotAccountResource returns the aether_registry_robot_account resource.
+// NewRegistryRobotAccountResource returns the norkeel_registry_robot_account resource.
 func NewRegistryRobotAccountResource() resource.Resource { return &robotAccountResource{} }
 
 // robotAccountResource manages one robot account of the organization's
@@ -42,7 +42,7 @@ func NewRegistryRobotAccountResource() resource.Resource { return &robotAccountR
 // and Delete are one request each. No timeouts (T11-15).
 type robotAccountResource struct{ pd *providerData }
 
-// robotAccountModel is the aether_registry_robot_account state.
+// robotAccountModel is the norkeel_registry_robot_account state.
 type robotAccountModel struct {
 	ID             types.String `tfsdk:"id"`
 	Name           types.String `tfsdk:"name"`
@@ -69,18 +69,18 @@ type robotAccountWire struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 }
 
-// Metadata names the resource aether_registry_robot_account.
+// Metadata names the resource norkeel_registry_robot_account.
 func (r *robotAccountResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_registry_robot_account"
 }
 
-// Schema defines aether_registry_robot_account (T11-6).
+// Schema defines norkeel_registry_robot_account (T11-6).
 func (r *robotAccountResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "A robot account (non-expiring `docker login` credential) of the organization's registry. It does not require `aether_registry` to exist. " +
+		MarkdownDescription: "A robot account (non-expiring `docker login` credential) of the organization's registry. It does not require `norkeel_registry` to exist. " +
 			"The API has no update route, so any change replaces the robot account (a new secret is issued). " +
 			"`create_before_destroy` is unsupported: the name is held until the old robot account is deleted, so the replacement is refused with 409. " +
-			"Destroying `aether_registry` removes every robot account out of band (they are recreated on the next apply); order destroys with `depends_on` on the registry.",
+			"Destroying `norkeel_registry` removes every robot account out of band (they are recreated on the next apply); order destroys with `depends_on` on the registry.",
 		Attributes: map[string]schema.Attribute{
 			"id": immutableComputed("Robot account UUID."),
 			"name": schema.StringAttribute{Required: true,
@@ -140,7 +140,7 @@ func (r *robotAccountResource) Create(ctx context.Context, req resource.CreateRe
 	}
 	var created robotAccountWire
 	if err := json.Unmarshal(res.Body, &created); err != nil || created.ID == "" || created.Token == nil {
-		resp.Diagnostics.AddError("Aether API created the robot account but returned no usable body",
+		resp.Diagnostics.AddError("Norkeel API created the robot account but returned no usable body",
 			describeUndecodable(res.HTTPResponse, res.Status(), err, "id or secret")+". The robot account was probably created, but it is not recorded in state and its secret is lost: delete it through the API or the portal and apply again.")
 		return
 	}
@@ -229,7 +229,7 @@ func (r *robotAccountResource) ImportState(ctx context.Context, req resource.Imp
 	for _, p := range found.Permissions {
 		if !isRobotPermission(p) {
 			resp.Diagnostics.AddError("Cannot import robot account",
-				fmt.Sprintf("Robot account %q has permission %q: this is the platform's default registry robot; it belongs to aether_registry and cannot be managed here.", found.Name, p))
+				fmt.Sprintf("Robot account %q has permission %q: this is the platform's default registry robot; it belongs to norkeel_registry and cannot be managed here.", found.Name, p))
 			return
 		}
 	}
@@ -265,8 +265,8 @@ func (r *robotAccountResource) find(ctx context.Context, id string) (*robotAccou
 // a reader drop a live robot - the cost is one extra GET. The API returns no
 // next_cursor; its undocumented `?cursor=<last id>` is added through a
 // RequestEditorFn because the generated call takes no parameters. Shared by
-// the aether_registry_robot_account resource and the
-// aether_registry_robot_accounts data source.
+// the norkeel_registry_robot_account resource and the
+// norkeel_registry_robot_accounts data source.
 func pageRobotAccounts(ctx context.Context, pd *providerData, visit func([]robotAccountWire) bool) diag.Diagnostics {
 	var diags diag.Diagnostics
 	cursor := ""
@@ -294,7 +294,7 @@ func pageRobotAccounts(ctx context.Context, pd *providerData, visit func([]robot
 			Items *[]robotAccountWire `json:"items"`
 		}
 		if err := json.Unmarshal(res.Body, &page); err != nil || page.Items == nil {
-			diags.AddError("Aether API returned no usable robot account list", describeUndecodable(res.HTTPResponse, res.Status(), err, "items"))
+			diags.AddError("Norkeel API returned no usable robot account list", describeUndecodable(res.HTTPResponse, res.Status(), err, "items"))
 			return diags
 		}
 		items := *page.Items
@@ -309,7 +309,7 @@ func pageRobotAccounts(ctx context.Context, pd *providerData, visit func([]robot
 			// The list is ORDER BY id over canonical lower-case UUIDs, so the
 			// cursor must strictly advance; a page that repeats or goes back
 			// would loop forever (T11-19).
-			diags.AddError("Aether API returned an unusable robot account list",
+			diags.AddError("Norkeel API returned an unusable robot account list",
 				fmt.Sprintf("Paging with cursor %q returned a page ending at %q, which does not advance past the cursor.", cursor, next))
 			return diags
 		}

@@ -1,6 +1,6 @@
 package provider_test
 
-// Tests for the aether_registry_cleanup_policies data source
+// Tests for the norkeel_registry_cleanup_policies data source
 // (datasource_registry_cleanup_policies.go, T14-7, registered as
 // NewRegistryCleanupPoliciesDataSource in provider.go's DataSources()):
 // condition value normalisation matching the resource's own, and
@@ -12,15 +12,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-const cleanupPoliciesDataSource = "data.aether_registry_cleanup_policies.p"
+const cleanupPoliciesDataSource = "data.norkeel_registry_cleanup_policies.p"
 
 const cleanupPoliciesDSHCL = `
-provider "aether" {}
-data "aether_registry_cleanup_policies" "p" {}
+provider "norkeel" {}
+data "norkeel_registry_cleanup_policies" "p" {}
 `
 
 // CP1. Fails if the data source does not normalise stored condition values
-// to strings the same way aether_registry_cleanup_policy's resource does
+// to strings the same way norkeel_registry_cleanup_policy's resource does
 // (a float64 10 -> "10", not "1e+01" or "10.0"; a null op/value stays null,
 // not ""), or if last_run_message (never rendered by any list route,
 // contract §10) leaks into state.

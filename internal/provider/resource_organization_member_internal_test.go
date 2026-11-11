@@ -1,6 +1,6 @@
 package provider
 
-// Pins the user-facing descriptions of aether_organization_member that
+// Pins the user-facing descriptions of norkeel_organization_member that
 // black-box tests cannot reach (plugin-testing v1.16.0 exposes no schema).
 // Named Test_... so `-run organizationMember` matches (Go only treats a name
 // as a test if the character after "Test" is not a lowercase letter).
@@ -28,7 +28,7 @@ func memberSchemaDescriptions(t *testing.T) (resourceDesc, roleDesc string) {
 // Terraform-created member may be unable to sign in).
 func Test_organizationMember_DescriptionCarriesTheT910SentenceVerbatim(t *testing.T) {
 	desc, _ := memberSchemaDescriptions(t)
-	const want = "The API creates the membership only. The address must already have an Aether login account " +
+	const want = "The API creates the membership only. The address must already have an Norkeel login account " +
 		"(created through the portal invitation flow; aether-api #302), otherwise the member cannot sign in. " +
 		"Destroying the resource removes the membership and leaves the login account in place."
 	if !strings.Contains(desc, want) {

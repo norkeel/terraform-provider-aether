@@ -13,7 +13,7 @@ package fakeapi
 //     fake models independently of registryStore (registry.go): a project
 //     exists once SeedRepository/SeedTag has ever been called for the org
 //     (MarkRegistryProjectExists for an enabled-but-empty project), and NEVER
-//     stops existing again - disabling aether_registry (even with purge)
+//     stops existing again - disabling norkeel_registry (even with purge)
 //     does not touch this store, because the real handler never consults the
 //     registries row either (§1 "the handler never consults the registries
 //     row") and nothing here actually purges an image (registry.go's own
@@ -148,7 +148,7 @@ func (rp *repositoryStore) init() {
 
 // MarkRegistryProjectExists records that org's Harbor project exists (so
 // GET repositories/tags stop answering "never enabled"), without seeding any
-// repository - the shape of a freshly `aether_registry`-enabled, still-empty
+// repository - the shape of a freshly `norkeel_registry`-enabled, still-empty
 // project.
 func (s *Server) MarkRegistryProjectExists(org string) {
 	rp := &s.repositories
@@ -213,7 +213,7 @@ func (s *Server) SetHarborPageCap(org string, n int) {
 // page contract (the exact fake behaviour SDD task-14-review-r1.md's M-1
 // names: "a fake or server that always answers next_cursor:\"2\"") so a
 // provider-level test can prove the collectAll pager used by
-// aether_registry_repositories and aether_registry_repository_tags (ruling
+// norkeel_registry_repositories and norkeel_registry_repository_tags (ruling
 // T14-15) fails loud on a repeated cursor instead of silently truncating the
 // list.
 func (s *Server) SetRepeatingHarborCursor(org, cursor string) {

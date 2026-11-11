@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider"
 )
 
 // version is set by GoReleaser (-X main.version=…); "dev" for local builds.
@@ -19,7 +19,7 @@ func main() {
 	flag.Parse()
 
 	err := providerserver.Serve(context.Background(), provider.New(version), providerserver.ServeOpts{
-		Address: "registry.terraform.io/plane-shift/aether",
+		Address: "registry.terraform.io/norkeel/norkeel",
 		Debug:   debug,
 	})
 	if err != nil {

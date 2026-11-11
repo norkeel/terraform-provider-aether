@@ -5,7 +5,7 @@ variable "cluster_id" {
 # Fixed pool: billed as a flat monthly fee; create waits until the pool is running,
 # and a later change to desired_nodes waits until that many nodes are ready.
 # vcpus, memory_gb, disk_gb and name REPLACE the pool when changed.
-resource "aether_node_pool" "workers" {
+resource "norkeel_node_pool" "workers" {
   cluster_id            = var.cluster_id
   name                  = "workers"
   vcpus                 = 4
@@ -21,7 +21,7 @@ resource "aether_node_pool" "workers" {
 
 # Autoscaling pool: max_vcpus above min_vcpus (or max_memory_gb above min_memory_gb) makes it
 # autoscaling, billed hourly per node; the autoscaler picks the node count inside the budget.
-resource "aether_node_pool" "batch" {
+resource "norkeel_node_pool" "batch" {
   cluster_id    = var.cluster_id
   name          = "batch"
   vcpus         = 8

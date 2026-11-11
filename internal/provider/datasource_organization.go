@@ -9,12 +9,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &organizationDataSource{}
 
-// NewOrganizationDataSource returns data.aether_organization.
+// NewOrganizationDataSource returns data.norkeel_organization.
 func NewOrganizationDataSource() datasource.DataSource { return &organizationDataSource{} }
 
 type organizationDataSource struct{ pd *providerData }
@@ -22,7 +22,7 @@ type organizationDataSource struct{ pd *providerData }
 // nonJSONSummary is the summary of the diagnostic for a 200 whose body the
 // generated client could not decode: it is not a reading of anything, so it
 // is an error, never an empty result (T13-14).
-const nonJSONSummary = "Aether API answered 200 without a JSON body"
+const nonJSONSummary = "Norkeel API answered 200 without a JSON body"
 
 // addNonJSONError adds the nonJSONSummary diagnostic for hr.
 func addNonJSONError(diags *diag.Diagnostics, hr *http.Response, status string) {

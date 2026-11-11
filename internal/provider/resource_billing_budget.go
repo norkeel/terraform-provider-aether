@@ -17,7 +17,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
 )
 
 var (
@@ -35,7 +35,7 @@ const (
 	budgetLimitCeiling = 10000000000.0 // exclusive
 )
 
-// NewBillingBudgetResource returns the aether_billing_budget resource.
+// NewBillingBudgetResource returns the norkeel_billing_budget resource.
 func NewBillingBudgetResource() resource.Resource { return &billingBudgetResource{} }
 
 // billingBudgetResource manages the provider organization's spend budget, a
@@ -45,7 +45,7 @@ func NewBillingBudgetResource() resource.Resource { return &billingBudgetResourc
 // is waited for and there is no timeouts block (T12-7).
 type billingBudgetResource struct{ pd *providerData }
 
-// billingBudgetModel is the aether_billing_budget state; tfsdk tags are the
+// billingBudgetModel is the norkeel_billing_budget state; tfsdk tags are the
 // attribute names.
 type billingBudgetModel struct {
 	ID              types.String  `tfsdk:"id"`
@@ -55,12 +55,12 @@ type billingBudgetModel struct {
 	UpdatedAt       types.String  `tfsdk:"updated_at"`
 }
 
-// Metadata names the resource aether_billing_budget.
+// Metadata names the resource norkeel_billing_budget.
 func (r *billingBudgetResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_billing_budget"
 }
 
-// Schema defines aether_billing_budget.
+// Schema defines norkeel_billing_budget.
 func (r *billingBudgetResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// T12-6: verbatim.
@@ -190,7 +190,7 @@ func (r *billingBudgetResource) Create(ctx context.Context, req resource.CreateR
 		// The expected case: no budget set yet.
 	case http.StatusOK:
 		resp.Diagnostics.AddError("A billing budget already exists",
-			"a budget already exists for this organization (set outside Terraform); import it: terraform import aether_billing_budget.<name> "+r.pd.OrgID)
+			"a budget already exists for this organization (set outside Terraform); import it: terraform import norkeel_billing_budget.<name> "+r.pd.OrgID)
 		return
 	default:
 		addAPIError(&resp.Diagnostics, g.StatusCode(), g.HTTPResponse.Header, g.Body, path.Empty())
@@ -291,7 +291,7 @@ func (r *billingBudgetResource) get(ctx context.Context) (*client.Budget, bool, 
 		addAPIError(&diags, g.StatusCode(), g.HTTPResponse.Header, g.Body, path.Empty())
 		return nil, false, diags
 	case g.JSON200 == nil:
-		diags.AddError("Aether API returned no usable billing budget", describeNonJSON(g.HTTPResponse, g.Status()))
+		diags.AddError("Norkeel API returned no usable billing budget", describeNonJSON(g.HTTPResponse, g.Status()))
 		return nil, false, diags
 	}
 	return g.JSON200, true, diags
@@ -320,11 +320,11 @@ func (r *billingBudgetResource) put(ctx context.Context, m *billingBudgetModel, 
 		return diags
 	}
 	if res.JSON200 == nil {
-		advice := " The budget was probably written, but it is not recorded in state: import it (terraform import aether_billing_budget.<name> " + r.pd.OrgID + ")."
+		advice := " The budget was probably written, but it is not recorded in state: import it (terraform import norkeel_billing_budget.<name> " + r.pd.OrgID + ")."
 		if !creating {
 			advice = " The budget was probably written, but state still holds the previous budget: apply again."
 		}
-		diags.AddError("Aether API accepted the billing budget but returned no usable body",
+		diags.AddError("Norkeel API accepted the billing budget but returned no usable body",
 			describeNonJSON(res.HTTPResponse, res.Status())+"."+advice)
 		return diags
 	}

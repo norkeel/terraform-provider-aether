@@ -2,7 +2,7 @@ package fakeapi
 
 // Billing-budget route of the fake, reproducing what aether-api DOES
 // (measured at aether-api 8e9045a; see the SDD task-12 contract,
-// .superpowers/sdd/2026-09-17-terraform-provider-aether/task-12-measured-contract.md),
+// .superpowers/sdd/2026-09-17-terraform-provider-norkeel/task-12-measured-contract.md),
 // NOT what its OpenAPI spec says:
 //
 //	GET    /organizations/{org}/billing/budget   200 Budget | 404

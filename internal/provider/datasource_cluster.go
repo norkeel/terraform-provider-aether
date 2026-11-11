@@ -14,8 +14,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var (
@@ -23,13 +23,13 @@ var (
 	_ datasource.DataSourceWithConfigValidators = &clusterDataSource{}
 )
 
-// NewClusterDataSource returns data.aether_cluster.
+// NewClusterDataSource returns data.norkeel_cluster.
 func NewClusterDataSource() datasource.DataSource { return &clusterDataSource{} }
 
 type clusterDataSource struct{ pd *providerData }
 
 // clusterDataModel is one cluster as the data sources expose it: every
-// aether_cluster attribute except timeouts, with k8s_version as the API's
+// norkeel_cluster attribute except timeouts, with k8s_version as the API's
 // resolved text (there is no configured spelling to preserve).
 type clusterDataModel struct {
 	ID                        types.String `tfsdk:"id"`
@@ -53,7 +53,7 @@ type clusterDataModel struct {
 }
 
 // clusterData flattens an API cluster through the resource's flattenCluster,
-// so the data sources and aether_cluster can never disagree on a field.
+// so the data sources and norkeel_cluster can never disagree on a field.
 func clusterData(c *client.Cluster) clusterDataModel {
 	var m clusterModel
 	flattenCluster(c, &m)
@@ -69,8 +69,8 @@ func clusterData(c *client.Cluster) clusterDataModel {
 }
 
 // clusterDataAttributes is the attribute set of one cluster. lookup makes
-// id and name the Optional inputs of data.aether_cluster; otherwise (an
-// element of data.aether_clusters) everything is Computed.
+// id and name the Optional inputs of data.norkeel_cluster; otherwise (an
+// element of data.norkeel_clusters) everything is Computed.
 func clusterDataAttributes(lookup bool) map[string]schema.Attribute {
 	computed := func(desc string) schema.StringAttribute {
 		return schema.StringAttribute{Computed: true, MarkdownDescription: desc}

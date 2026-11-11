@@ -16,12 +16,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &registryRepositoryTagsDataSource{}
 
-// NewRegistryRepositoryTagsDataSource is aether_registry_repository_tags (T14-5).
+// NewRegistryRepositoryTagsDataSource is norkeel_registry_repository_tags (T14-5).
 func NewRegistryRepositoryTagsDataSource() datasource.DataSource {
 	return &registryRepositoryTagsDataSource{}
 }
@@ -88,7 +88,7 @@ func (d *registryRepositoryTagsDataSource) Schema(_ context.Context, _ datasourc
 			"A repository that does not exist, or a registry that was never enabled, is an error.",
 		Attributes: map[string]schema.Attribute{
 			"repository": schema.StringAttribute{Required: true,
-				MarkdownDescription: "Repository name exactly as `aether_registry_repositories` returns it (plain, not URL-encoded; it can contain `/`, e.g. `team/app`).",
+				MarkdownDescription: "Repository name exactly as `norkeel_registry_repositories` returns it (plain, not URL-encoded; it can contain `/`, e.g. `team/app`).",
 				Validators:          []validator.String{stringvalidator.LengthAtLeast(1)}},
 			"tags": schema.ListNestedAttribute{Computed: true,
 				MarkdownDescription: "One entry per artifact and tag, sorted by `digest`, then `name`.",
@@ -154,7 +154,7 @@ func (d *registryRepositoryTagsDataSource) Read(ctx context.Context, req datasou
 		}
 		for _, it := range items {
 			if it.Digest == "" {
-				diags.AddError("Aether API returned no usable registry list", describeJSONWithout(hr, hr.Status, "tag digest"))
+				diags.AddError("Norkeel API returned no usable registry list", describeJSONWithout(hr, hr.Status, "tag digest"))
 				return nil, "", pageFailure(diags)
 			}
 		}
@@ -166,7 +166,7 @@ func (d *registryRepositoryTagsDataSource) Read(ctx context.Context, req datasou
 			rid = " (request id " + requestID + ")"
 		}
 		resp.Diagnostics.AddAttributeError(path.Root("repository"), "Repository not found",
-			fmt.Sprintf("%q: repository not found (or the registry is not enabled)%s. Use the plain name aether_registry_repositories returns, e.g. \"team/app\".", repo, rid))
+			fmt.Sprintf("%q: repository not found (or the registry is not enabled)%s. Use the plain name norkeel_registry_repositories returns, e.g. \"team/app\".", repo, rid))
 		return
 	}
 	if err != nil {

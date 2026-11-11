@@ -17,7 +17,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
 )
 
 var (
@@ -27,7 +27,7 @@ var (
 	_ resource.ResourceWithModifyPlan  = &organizationResource{}
 )
 
-// NewOrganizationResource returns the aether_organization resource.
+// NewOrganizationResource returns the norkeel_organization resource.
 func NewOrganizationResource() resource.Resource { return &organizationResource{} }
 
 // organizationResource manages the settings of the provider's own
@@ -36,7 +36,7 @@ func NewOrganizationResource() resource.Resource { return &organizationResource{
 // forgets it. Every operation is at most one request; nothing is waited for.
 type organizationResource struct{ pd *providerData }
 
-// organizationModel is the aether_organization state.
+// organizationModel is the norkeel_organization state.
 type organizationModel struct {
 	ID           types.String `tfsdk:"id"`
 	Name         types.String `tfsdk:"name"`
@@ -52,7 +52,7 @@ type organizationModel struct {
 // The API does NOT apply it on PUT, so the provider does.
 var slugPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$`)
 
-// Metadata names the resource aether_organization.
+// Metadata names the resource norkeel_organization.
 func (r *organizationResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_organization"
 }
@@ -66,10 +66,10 @@ func managedString(desc string, validators ...validator.String) schema.StringAtt
 		Validators:    validators}
 }
 
-// Schema defines aether_organization.
+// Schema defines norkeel_organization.
 func (r *organizationResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "The settings of the provider's organization. Organizations are created at registration, so this resource cannot create one: import it (`terraform import aether_organization.<name> <organization id>`). " +
+		MarkdownDescription: "The settings of the provider's organization. Organizations are created at registration, so this resource cannot create one: import it (`terraform import norkeel_organization.<name> <organization id>`). " +
 			"Destroy only forgets the organization; it is never deleted. " +
 			"Removing `name`, `billing_email` or `vat_id` from the configuration stops managing it and keeps the stored value; set it to `\"\"` to clear it (`name` cannot be cleared).",
 		Attributes: map[string]schema.Attribute{
@@ -145,7 +145,7 @@ func (r *organizationResource) ModifyPlan(ctx context.Context, req resource.Modi
 // makes no request.
 func (r *organizationResource) Create(_ context.Context, _ resource.CreateRequest, resp *resource.CreateResponse) {
 	resp.Diagnostics.AddError("Organizations are created at registration",
-		"Import your organization instead: terraform import aether_organization.<name> <organization id> (data.aether_organization exposes the id).")
+		"Import your organization instead: terraform import norkeel_organization.<name> <organization id> (data.norkeel_organization exposes the id).")
 }
 
 // Read refreshes the organization. 404 removes it from state; every other
@@ -175,7 +175,7 @@ func (r *organizationResource) Read(ctx context.Context, req resource.ReadReques
 		addAPIError(&resp.Diagnostics, g.StatusCode(), g.HTTPResponse.Header, g.Body, path.Empty())
 		return
 	case g.JSON200 == nil:
-		resp.Diagnostics.AddError("Aether API returned no usable organization", describeNonJSON(g.HTTPResponse, g.Status()))
+		resp.Diagnostics.AddError("Norkeel API returned no usable organization", describeNonJSON(g.HTTPResponse, g.Status()))
 		return
 	}
 	flattenOrganization(g.JSON200, &state)
@@ -216,7 +216,7 @@ func (r *organizationResource) Update(ctx context.Context, req resource.UpdateRe
 			return
 		}
 		if g.JSON200 == nil {
-			resp.Diagnostics.AddError("Aether API returned no usable organization", describeNonJSON(g.HTTPResponse, g.Status()))
+			resp.Diagnostics.AddError("Norkeel API returned no usable organization", describeNonJSON(g.HTTPResponse, g.Status()))
 			return
 		}
 		flattenOrganization(g.JSON200, &plan)
@@ -234,7 +234,7 @@ func (r *organizationResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 	if res.JSON200 == nil {
-		resp.Diagnostics.AddError("Aether API accepted the organization update but returned no usable body",
+		resp.Diagnostics.AddError("Norkeel API accepted the organization update but returned no usable body",
 			describeNonJSON(res.HTTPResponse, res.Status())+". The change was probably written, but state still holds the previous values: apply again (the PUT is idempotent).")
 		return
 	}

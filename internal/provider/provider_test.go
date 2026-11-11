@@ -14,7 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
 // The generated client types every organization id as openapi_types.UUID
@@ -35,9 +35,9 @@ func configure(t *testing.T, endpoint, token, orgID string) (provider.ConfigureR
 	// the env vars as a fallback, so leaving them alone here would let a
 	// value that has nothing to do with THIS test decide which path
 	// Configure takes - non-deterministic, and only on some machines.
-	t.Setenv("AETHER_API_TOKEN", "")
-	t.Setenv("AETHER_ENDPOINT", "")
-	t.Setenv("AETHER_ORGANIZATION_ID", "")
+	t.Setenv("NORKEEL_API_TOKEN", "")
+	t.Setenv("NORKEEL_ENDPOINT", "")
+	t.Setenv("NORKEEL_ORGANIZATION_ID", "")
 	p := New("test")()
 	schemaResp := provider.SchemaResponse{}
 	p.Schema(context.Background(), provider.SchemaRequest{}, &schemaResp)
@@ -81,9 +81,9 @@ func configureRaw(t *testing.T, api *fakeapi.Server, apiToken, orgID tftypes.Val
 	// Same rationale as configure(): an unknown attribute's ValueString() is
 	// "", indistinguishable from a leaked env fallback unless the env is
 	// pinned to empty for the duration of this call.
-	t.Setenv("AETHER_API_TOKEN", "")
-	t.Setenv("AETHER_ENDPOINT", "")
-	t.Setenv("AETHER_ORGANIZATION_ID", "")
+	t.Setenv("NORKEEL_API_TOKEN", "")
+	t.Setenv("NORKEEL_ENDPOINT", "")
+	t.Setenv("NORKEEL_ORGANIZATION_ID", "")
 	p := New("test")()
 	schemaResp := provider.SchemaResponse{}
 	p.Schema(context.Background(), provider.SchemaRequest{}, &schemaResp)
@@ -293,7 +293,7 @@ func TestConfigure_ErrorsWhenTokenSeesNoOrganization(t *testing.T) {
 func TestConfigure_BadTokenIsOneProviderLevelError(t *testing.T) {
 	api := fakeapi.New(t)
 	api.AddOrg(orgAcme, "A", "a")
-	resp, _ := configure(t, api.URL(), "aether_wrong", "")
+	resp, _ := configure(t, api.URL(), "norkeel_wrong", "")
 	if !resp.Diagnostics.HasError() {
 		t.Fatal("expected an error")
 	}
@@ -305,12 +305,12 @@ func TestConfigure_BadTokenIsOneProviderLevelError(t *testing.T) {
 func TestConfigure_ReadsEnvironment(t *testing.T) {
 	api := fakeapi.New(t)
 	api.AddOrg(orgAcme, "A", "a")
-	t.Setenv("AETHER_API_TOKEN", api.Token())
-	t.Setenv("AETHER_ENDPOINT", api.URL())
-	// A developer's exported AETHER_ORGANIZATION_ID must not flip this test
+	t.Setenv("NORKEEL_API_TOKEN", api.Token())
+	t.Setenv("NORKEEL_ENDPOINT", api.URL())
+	// A developer's exported NORKEEL_ORGANIZATION_ID must not flip this test
 	// onto the explicit-org path - pin it empty so the test always exercises
 	// the token-derives-the-org behavior it's named for.
-	t.Setenv("AETHER_ORGANIZATION_ID", "")
+	t.Setenv("NORKEEL_ORGANIZATION_ID", "")
 	p := New("test")()
 	schemaResp := provider.SchemaResponse{}
 	p.Schema(context.Background(), provider.SchemaRequest{}, &schemaResp)
@@ -437,7 +437,7 @@ func TestConfigure_UnknownValuesAreRejected(t *testing.T) {
 }
 
 // TestConfigure_DoesNotLeakADevelopersExportedToken pins why the configure
-// helper must reset AETHER_API_TOKEN/AETHER_ENDPOINT/AETHER_ORGANIZATION_ID
+// helper must reset NORKEEL_API_TOKEN/NORKEEL_ENDPOINT/NORKEEL_ORGANIZATION_ID
 // to "" itself: without that, a value a developer happens to have exported
 // in their own shell silently satisfies firstNonEmpty() instead of the
 // blank api_token this test passes, and the assertion below can no longer
@@ -445,13 +445,13 @@ func TestConfigure_UnknownValuesAreRejected(t *testing.T) {
 // whatever was in the environment when `go test` ran".
 func TestConfigure_DoesNotLeakADevelopersExportedToken(t *testing.T) {
 	api := fakeapi.New(t)
-	t.Setenv("AETHER_API_TOKEN", "aether_"+strings.Repeat("z", 64)) // wrong, but non-empty
+	t.Setenv("NORKEEL_API_TOKEN", "aether_"+strings.Repeat("z", 64)) // wrong, but non-empty
 	resp, _ := configure(t, api.URL(), "", "")
 	if !resp.Diagnostics.HasError() {
 		t.Fatal("expected an error")
 	}
 	if got := resp.Diagnostics.Errors()[0].Summary(); got != "Missing API token" {
-		t.Fatalf("summary = %q, want %q - a leaked exported AETHER_API_TOKEN reached the API instead of being rejected as absent", got, "Missing API token")
+		t.Fatalf("summary = %q, want %q - a leaked exported NORKEEL_API_TOKEN reached the API instead of being rejected as absent", got, "Missing API token")
 	}
 }
 

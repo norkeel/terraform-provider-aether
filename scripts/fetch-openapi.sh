@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Re-vendor api/openapi.yaml from plane-shift/aether-api.
+# Re-vendor api/openapi.yaml from norkeel/aether-api.
 #
 # Usage: scripts/fetch-openapi.sh [<full-sha>]
 #   With a sha: vendor that revision, then record it in OPENAPI_REF.
@@ -38,7 +38,7 @@ trap 'rm -f "$tmp"' EXIT
 
 # gh api works for the private repo (token) and the public one alike.
 gh api -H 'Accept: application/vnd.github.raw' \
-  "repos/plane-shift/aether-api/contents/api/openapi.yaml?ref=${candidate}" > "$tmp"
+  "repos/norkeel/aether-api/contents/api/openapi.yaml?ref=${candidate}" > "$tmp"
 
 python3 -c "import yaml,sys; yaml.safe_load(open('$tmp'))" || {
   echo "fetched spec does not parse as YAML; leaving api/openapi.yaml and OPENAPI_REF untouched" >&2

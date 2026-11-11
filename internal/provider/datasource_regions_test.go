@@ -12,7 +12,7 @@ import (
 // R1. The plan's reference implementation is verbatim (T13-3), so this test
 // pins the reference file's own contract rather than inventing a new one.
 //
-// Fails today (RED) with "does not support data source \"aether_regions\"".
+// Fails today (RED) with "does not support data source \"norkeel_regions\"".
 // Once implemented, fails against a wrong implementation if the fake's one
 // eu-fi region is missing, wrong, or if `available` reads anything but true.
 func TestDataSourceRegions_ReadsTheFakesOneRegion(t *testing.T) {
@@ -22,13 +22,13 @@ func TestDataSourceRegions_ReadsTheFakesOneRegion(t *testing.T) {
 		IsUnitTest:               true,
 		ProtoV6ProviderFactories: factories(),
 		Steps: []resource.TestStep{{
-			Config: dsProviderBlock + `data "aether_regions" "r" {}`,
+			Config: dsProviderBlock + `data "norkeel_regions" "r" {}`,
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_regions.r", "regions.#", "1"),
-				resource.TestCheckResourceAttr("data.aether_regions.r", "regions.0.id", "eu-fi"),
-				resource.TestCheckResourceAttr("data.aether_regions.r", "regions.0.name", "Europe (Finland)"),
-				resource.TestCheckResourceAttr("data.aether_regions.r", "regions.0.location", "Helsinki"),
-				resource.TestCheckResourceAttr("data.aether_regions.r", "regions.0.available", "true"),
+				resource.TestCheckResourceAttr("data.norkeel_regions.r", "regions.#", "1"),
+				resource.TestCheckResourceAttr("data.norkeel_regions.r", "regions.0.id", "eu-fi"),
+				resource.TestCheckResourceAttr("data.norkeel_regions.r", "regions.0.name", "Europe (Finland)"),
+				resource.TestCheckResourceAttr("data.norkeel_regions.r", "regions.0.location", "Helsinki"),
+				resource.TestCheckResourceAttr("data.norkeel_regions.r", "regions.0.available", "true"),
 			),
 		}},
 	})
@@ -46,11 +46,11 @@ func TestDataSourceRegions_EmptyResultIsAnEmptyListNotNull(t *testing.T) {
 		IsUnitTest:               true,
 		ProtoV6ProviderFactories: factories(),
 		Steps: []resource.TestStep{{
-			Config: dsProviderBlock + `data "aether_regions" "r" {}`,
+			Config: dsProviderBlock + `data "norkeel_regions" "r" {}`,
 			ConfigStateChecks: []statecheck.StateCheck{
-				statecheck.ExpectKnownValue("data.aether_regions.r", tfjsonpath.New("regions"), knownvalue.ListSizeExact(0)),
+				statecheck.ExpectKnownValue("data.norkeel_regions.r", tfjsonpath.New("regions"), knownvalue.ListSizeExact(0)),
 			},
-			Check: resource.TestCheckResourceAttr("data.aether_regions.r", "regions.#", "0"),
+			Check: resource.TestCheckResourceAttr("data.norkeel_regions.r", "regions.#", "0"),
 		}},
 	})
 }

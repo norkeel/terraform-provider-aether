@@ -76,7 +76,7 @@ func (t *retryTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	req = req.Clone(req.Context())
 	req.Header.Set("Authorization", "Bearer "+t.token)
 	if req.Header.Get("User-Agent") == "" {
-		req.Header.Set("User-Agent", "terraform-provider-aether")
+		req.Header.Set("User-Agent", "terraform-provider-norkeel")
 	}
 
 	hasBody := req.Body != nil && req.Body != http.NoBody

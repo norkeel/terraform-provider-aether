@@ -10,7 +10,7 @@ import (
 
 var _ datasource.DataSourceWithConfigure = &registryCleanupPoliciesDataSource{}
 
-// NewRegistryCleanupPoliciesDataSource is aether_registry_cleanup_policies (T14-7).
+// NewRegistryCleanupPoliciesDataSource is norkeel_registry_cleanup_policies (T14-7).
 func NewRegistryCleanupPoliciesDataSource() datasource.DataSource {
 	return &registryCleanupPoliciesDataSource{}
 }
@@ -18,7 +18,7 @@ func NewRegistryCleanupPoliciesDataSource() datasource.DataSource {
 type registryCleanupPoliciesDataSource struct{ pd *providerData }
 
 type registryCleanupPoliciesModel struct {
-	// The policy attributes are exactly the aether_registry_cleanup_policy
+	// The policy attributes are exactly the norkeel_registry_cleanup_policy
 	// resource's, so its model and flatten are reused (same normalisation).
 	Policies []cleanupPolicyModel `tfsdk:"policies"`
 }

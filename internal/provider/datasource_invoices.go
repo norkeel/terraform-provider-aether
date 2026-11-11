@@ -13,13 +13,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &invoicesDataSource{}
 
-// NewInvoicesDataSource is aether_invoices (T14-11).
+// NewInvoicesDataSource is norkeel_invoices (T14-11).
 func NewInvoicesDataSource() datasource.DataSource { return &invoicesDataSource{} }
 
 type invoicesDataSource struct{ pd *providerData }
@@ -129,12 +129,12 @@ func (d *invoicesDataSource) Read(ctx context.Context, _ datasource.ReadRequest,
 			NextCursor *string        `json:"next_cursor"`
 		}
 		if err := json.Unmarshal(body, &page); err != nil || page.Items == nil {
-			diags.AddError("Aether API returned no usable invoice list", describeUndecodable(hr, hr.Status, err, "items"))
+			diags.AddError("Norkeel API returned no usable invoice list", describeUndecodable(hr, hr.Status, err, "items"))
 			return nil, "", pageFailure(diags)
 		}
 		for _, inv := range *page.Items {
 			if inv.ID == "" || inv.InvoiceNumber == "" || inv.PeriodStart == nil || inv.PeriodEnd == nil || inv.CreatedAt == nil {
-				diags.AddError("Aether API returned no usable invoice list",
+				diags.AddError("Norkeel API returned no usable invoice list",
 					describeJSONWithout(hr, hr.Status, "invoice id, invoice_number, period or created_at"))
 				return nil, "", pageFailure(diags)
 			}

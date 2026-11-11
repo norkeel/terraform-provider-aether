@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &regionsDataSource{}
@@ -61,7 +61,7 @@ func (d *regionsDataSource) Read(ctx context.Context, _ datasource.ReadRequest, 
 		return
 	}
 	if res.JSON200 == nil {
-		resp.Diagnostics.AddError("Aether API answered 200 without a JSON body",
+		resp.Diagnostics.AddError("Norkeel API answered 200 without a JSON body",
 			fmt.Sprintf("GET %s returned %s with content type %q.",
 				res.HTTPResponse.Request.URL, res.Status(), res.HTTPResponse.Header.Get("Content-Type")))
 		return

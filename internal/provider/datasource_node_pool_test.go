@@ -11,7 +11,7 @@ import (
 // NewNodePoolsDataSource (datasource_node_pools.go).
 
 // Basic read by id. Fails today (RED) with "does not support data source
-// \"aether_node_pool\"". Once implemented, fails against a wrong
+// \"norkeel_node_pool\"". Once implemented, fails against a wrong
 // implementation if any attribute is dropped by the extracted flatten
 // (resource_node_pool.go:785, a method today per T13-14).
 func TestDataSourceNodePool_ByIDReadsCoreAttributes(t *testing.T) {
@@ -24,17 +24,17 @@ func TestDataSourceNodePool_ByIDReadsCoreAttributes(t *testing.T) {
 		Steps: []resource.TestStep{{
 			Config: nodePoolDataSourceHCL(cid, pid, ""),
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_node_pool.p", "id", pid),
-				resource.TestCheckResourceAttr("data.aether_node_pool.p", "cluster_id", cid),
-				resource.TestCheckResourceAttr("data.aether_node_pool.p", "name", "workers"),
-				resource.TestCheckResourceAttr("data.aether_node_pool.p", "vcpus", "2"),
-				resource.TestCheckResourceAttr("data.aether_node_pool.p", "memory_gb", "4"),
-				resource.TestCheckResourceAttr("data.aether_node_pool.p", "disk_gb", "20"),
-				resource.TestCheckResourceAttr("data.aether_node_pool.p", "desired_nodes", "1"),
-				resource.TestCheckResourceAttr("data.aether_node_pool.p", "min_nodes", "1"),
-				resource.TestCheckResourceAttr("data.aether_node_pool.p", "max_nodes", "1"),
-				resource.TestCheckResourceAttrSet("data.aether_node_pool.p", "created_at"),
-				resource.TestCheckResourceAttrSet("data.aether_node_pool.p", "updated_at"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool.p", "id", pid),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool.p", "cluster_id", cid),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool.p", "name", "workers"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool.p", "vcpus", "2"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool.p", "memory_gb", "4"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool.p", "disk_gb", "20"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool.p", "desired_nodes", "1"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool.p", "min_nodes", "1"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool.p", "max_nodes", "1"),
+				resource.TestCheckResourceAttrSet("data.norkeel_node_pool.p", "created_at"),
+				resource.TestCheckResourceAttrSet("data.norkeel_node_pool.p", "updated_at"),
 			),
 		}},
 	})
@@ -61,8 +61,8 @@ func TestDataSourceNodePool_ByNameMatchesADeletingPool(t *testing.T) {
 		Steps: []resource.TestStep{{
 			Config: nodePoolDataSourceHCL(cid, "", "workers"),
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_node_pool.p", "id", pid),
-				resource.TestCheckResourceAttr("data.aether_node_pool.p", "status", "deleting"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool.p", "id", pid),
+				resource.TestCheckResourceAttr("data.norkeel_node_pool.p", "status", "deleting"),
 			),
 		}},
 	})
@@ -145,7 +145,7 @@ func TestDataSourceNodePool_UpperCaseClusterIDIsRejectedWithZeroRequests(t *test
 	}
 }
 
-// P2: aether_node_pools walks two pages (a full page then a partial one -
+// P2: norkeel_node_pools walks two pages (a full page then a partial one -
 // no trailing empty page, since 150 is not an exact multiple of 100).
 // Fails if item count != 150, or if the second GET doesn't carry the first
 // page's last id as its cursor.
@@ -157,13 +157,13 @@ func TestDataSourceNodePools_WalksTwoPages(t *testing.T) {
 		IsUnitTest:               true,
 		ProtoV6ProviderFactories: factories(),
 		Steps: []resource.TestStep{{
-			Config: dsProviderBlock + `data "aether_node_pools" "all" {
+			Config: dsProviderBlock + `data "norkeel_node_pools" "all" {
   cluster_id = "` + cid + `"
 }`,
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_node_pools.all", "node_pools.#", "150"),
-				resource.TestCheckResourceAttr("data.aether_node_pools.all", "node_pools.0.id", ids[0]),
-				resource.TestCheckResourceAttr("data.aether_node_pools.all", "node_pools.149.id", ids[149]),
+				resource.TestCheckResourceAttr("data.norkeel_node_pools.all", "node_pools.#", "150"),
+				resource.TestCheckResourceAttr("data.norkeel_node_pools.all", "node_pools.0.id", ids[0]),
+				resource.TestCheckResourceAttr("data.norkeel_node_pools.all", "node_pools.149.id", ids[149]),
 			),
 		}},
 	})

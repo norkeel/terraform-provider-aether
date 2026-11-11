@@ -7,12 +7,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &clustersDataSource{}
 
-// NewClustersDataSource returns data.aether_clusters.
+// NewClustersDataSource returns data.norkeel_clusters.
 func NewClustersDataSource() datasource.DataSource { return &clustersDataSource{} }
 
 type clustersDataSource struct{ pd *providerData }
@@ -30,7 +30,7 @@ func (d *clustersDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 		MarkdownDescription: "Every cluster of the organization, in the API's order (by id). Includes clusters that are being deleted or have failed, until the platform removes them.",
 		Attributes: map[string]schema.Attribute{
 			"clusters": schema.ListNestedAttribute{Computed: true,
-				MarkdownDescription: "The clusters, with the same attributes as `data.aether_cluster`.",
+				MarkdownDescription: "The clusters, with the same attributes as `data.norkeel_cluster`.",
 				NestedObject:        schema.NestedAttributeObject{Attributes: clusterDataAttributes(false)}},
 		},
 	}

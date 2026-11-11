@@ -10,7 +10,7 @@ import (
 
 var _ datasource.DataSourceWithConfigure = &registryRobotAccountsDataSource{}
 
-// NewRegistryRobotAccountsDataSource is aether_registry_robot_accounts (T14-6).
+// NewRegistryRobotAccountsDataSource is norkeel_registry_robot_accounts (T14-6).
 func NewRegistryRobotAccountsDataSource() datasource.DataSource {
 	return &registryRobotAccountsDataSource{}
 }

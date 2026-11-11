@@ -9,7 +9,7 @@ import (
 // These are the fake's own tests (task-12-brief-amended.md test 11):
 // budgets.go must reproduce the measured aether-api contract exactly (see
 // task-12-measured-contract.md), independent of anything the
-// aether_billing_budget resource (resource_billing_budget.go) does with it.
+// norkeel_billing_budget resource (resource_billing_budget.go) does with it.
 
 const budgetPath = "/organizations/" + testOrg + "/billing/budget"
 

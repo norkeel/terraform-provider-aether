@@ -10,12 +10,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/apierr"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/apierr"
 )
 
 var _ datasource.DataSourceWithConfigure = &clusterNetworkDataSource{}
 
-// NewClusterNetworkDataSource returns data.aether_cluster_network.
+// NewClusterNetworkDataSource returns data.norkeel_cluster_network.
 func NewClusterNetworkDataSource() datasource.DataSource { return &clusterNetworkDataSource{} }
 
 type clusterNetworkDataSource struct{ pd *providerData }

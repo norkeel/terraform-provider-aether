@@ -3,11 +3,11 @@ variable "cluster_id" {
 }
 
 # Admin kubeconfig (sensitive, stored in state); readable only while the cluster is running.
-data "aether_kubeconfig" "this" {
+data "norkeel_kubeconfig" "this" {
   cluster_id = var.cluster_id
 }
 
 output "kubeconfig" {
-  value     = data.aether_kubeconfig.this.content
+  value     = data.norkeel_kubeconfig.this.content
   sensitive = true
 }

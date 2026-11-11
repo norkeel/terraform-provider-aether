@@ -5,12 +5,12 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/provider/fakeapi"
+	"github.com/norkeel/terraform-provider-norkeel/internal/provider/fakeapi"
 )
 
 // V1. Expected coder symbol: NewK8sVersionsDataSource (datasource_k8s_versions.go).
 //
-// Fails today (RED) with "does not support data source \"aether_k8s_versions\"".
+// Fails today (RED) with "does not support data source \"norkeel_k8s_versions\"".
 // Once implemented, fails against a wrong implementation if `latest` is
 // anything but the FIRST item's patch (not the item labelled Latest looked up
 // by label - the two must be the same item, but a coder computing `latest`
@@ -28,17 +28,17 @@ func TestDataSourceK8sVersions_LatestIsTheFirstItemsPatch(t *testing.T) {
 		IsUnitTest:               true,
 		ProtoV6ProviderFactories: factories(),
 		Steps: []resource.TestStep{{
-			Config: dsProviderBlock + `data "aether_k8s_versions" "v" {}`,
+			Config: dsProviderBlock + `data "norkeel_k8s_versions" "v" {}`,
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_k8s_versions.v", "versions.#", "3"),
-				resource.TestCheckResourceAttr("data.aether_k8s_versions.v", "versions.0.version", "1.38"),
-				resource.TestCheckResourceAttr("data.aether_k8s_versions.v", "versions.0.label", "Latest"),
-				resource.TestCheckResourceAttr("data.aether_k8s_versions.v", "versions.0.patch", "1.38.1"),
-				resource.TestCheckResourceAttr("data.aether_k8s_versions.v", "versions.1.version", "1.37"),
-				resource.TestCheckResourceAttr("data.aether_k8s_versions.v", "versions.1.label", "Stable"),
-				resource.TestCheckResourceAttr("data.aether_k8s_versions.v", "versions.1.patch", "1.37.9"),
-				resource.TestCheckResourceAttr("data.aether_k8s_versions.v", "versions.2.patch", "1.36.20"),
-				resource.TestCheckResourceAttr("data.aether_k8s_versions.v", "latest", "1.38.1"),
+				resource.TestCheckResourceAttr("data.norkeel_k8s_versions.v", "versions.#", "3"),
+				resource.TestCheckResourceAttr("data.norkeel_k8s_versions.v", "versions.0.version", "1.38"),
+				resource.TestCheckResourceAttr("data.norkeel_k8s_versions.v", "versions.0.label", "Latest"),
+				resource.TestCheckResourceAttr("data.norkeel_k8s_versions.v", "versions.0.patch", "1.38.1"),
+				resource.TestCheckResourceAttr("data.norkeel_k8s_versions.v", "versions.1.version", "1.37"),
+				resource.TestCheckResourceAttr("data.norkeel_k8s_versions.v", "versions.1.label", "Stable"),
+				resource.TestCheckResourceAttr("data.norkeel_k8s_versions.v", "versions.1.patch", "1.37.9"),
+				resource.TestCheckResourceAttr("data.norkeel_k8s_versions.v", "versions.2.patch", "1.36.20"),
+				resource.TestCheckResourceAttr("data.norkeel_k8s_versions.v", "latest", "1.38.1"),
 			),
 		}},
 	})
@@ -55,10 +55,10 @@ func TestDataSourceK8sVersions_EmptyListMeansVersionsEmptyAndLatestNull(t *testi
 		IsUnitTest:               true,
 		ProtoV6ProviderFactories: factories(),
 		Steps: []resource.TestStep{{
-			Config: dsProviderBlock + `data "aether_k8s_versions" "v" {}`,
+			Config: dsProviderBlock + `data "norkeel_k8s_versions" "v" {}`,
 			Check: resource.ComposeTestCheckFunc(
-				resource.TestCheckResourceAttr("data.aether_k8s_versions.v", "versions.#", "0"),
-				resource.TestCheckNoResourceAttr("data.aether_k8s_versions.v", "latest"),
+				resource.TestCheckResourceAttr("data.norkeel_k8s_versions.v", "versions.#", "0"),
+				resource.TestCheckNoResourceAttr("data.norkeel_k8s_versions.v", "latest"),
 			),
 		}},
 	})

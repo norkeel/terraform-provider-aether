@@ -10,7 +10,7 @@ import (
 
 var _ datasource.DataSourceWithConfigure = &registryDataSource{}
 
-// NewRegistryDataSource is aether_registry (T14-3).
+// NewRegistryDataSource is norkeel_registry (T14-3).
 func NewRegistryDataSource() datasource.DataSource { return &registryDataSource{} }
 
 type registryDataSource struct{ pd *providerData }
@@ -32,7 +32,7 @@ func (d *registryDataSource) Metadata(_ context.Context, req datasource.Metadata
 func (d *registryDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "The organization's container registry. A registry that is not enabled reads `enabled = false` with every other attribute null — it is not an error, so the data source can drive conditional configuration. " +
-			"Storage consumption is not reported here: see the `registry` line of `aether_cost_breakdown`'s `autoscaling` list (GiB-hours and euros).",
+			"Storage consumption is not reported here: see the `registry` line of `norkeel_cost_breakdown`'s `autoscaling` list (GiB-hours and euros).",
 		Attributes: map[string]schema.Attribute{
 			"enabled":        schema.BoolAttribute{Computed: true, MarkdownDescription: "Whether the registry is enabled."},
 			"id":             schema.StringAttribute{Computed: true, MarkdownDescription: "Registry id; null when not enabled. It changes when the registry is disabled and enabled again."},

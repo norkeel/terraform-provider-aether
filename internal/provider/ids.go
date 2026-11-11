@@ -3,7 +3,7 @@ package provider
 import (
 	"fmt"
 
-	"github.com/plane-shift/terraform-provider-aether/internal/client"
+	"github.com/norkeel/terraform-provider-norkeel/internal/client"
 )
 
 // parseID turns an id the provider holds as canonical UUID TEXT into the
