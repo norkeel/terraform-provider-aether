@@ -57,5 +57,5 @@ jobs:
       - name: Acceptance tests
         run: make testacc
         env:
-          AETHER_ENDPOINT: https://dev.api.aetherplatform.cloud
+          AETHER_ENDPOINT: https://dev.api.norkeel.com
           AETHER_API_TOKEN: ${{ secrets.AETHER_DEV_API_TOKEN }}
