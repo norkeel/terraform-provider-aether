@@ -29,7 +29,7 @@ An API token is not tied to the member who created it: removing that member, or 
 
 ## Endpoint
 
-The `endpoint` attribute (or `AETHER_ENDPOINT`) selects the API. It defaults to production, `https://api.aetherplatform.cloud`; use `https://dev.api.aetherplatform.cloud` for the dev environment.
+The `endpoint` attribute (or `AETHER_ENDPOINT`) selects the API. It defaults to production, `https://api.norkeel.com`; use `https://dev.api.norkeel.com` for the dev environment.
 
 ## State holds secrets
 
@@ -41,7 +41,7 @@ The state stores the cluster kubeconfig, registry robot secrets, the registry's 
 ### Optional
 
 - `api_token` (String, Sensitive) API token created in the portal (`aether_…`). Falls back to `AETHER_API_TOKEN`.
-- `endpoint` (String) API base URL. Defaults to `https://api.aetherplatform.cloud`; falls back to `AETHER_ENDPOINT`. Must be `https`, or `http` with a loopback host (`localhost` or a loopback IP) — the API token is sent on every request, so plain `http` to any other host is refused rather than leaking the credential in cleartext.
+- `endpoint` (String) API base URL. Defaults to `https://api.norkeel.com`; falls back to `AETHER_ENDPOINT`. Must be `https`, or `http` with a loopback host (`localhost` or a loopback IP) — the API token is sent on every request, so plain `http` to any other host is refused rather than leaking the credential in cleartext.
 - `organization_id` (String) Organization the token belongs to. Optional: resolved automatically when the token sees exactly one organization. Falls back to `AETHER_ORGANIZATION_ID`.
 
 ## Example
@@ -66,7 +66,7 @@ variable "aether_api_token" {
 # Create an API token in the Aether portal first (Settings → API Tokens). Role: Admin (the default).
 provider "aether" {
   api_token = var.aether_api_token # or AETHER_API_TOKEN
-  # endpoint defaults to https://api.aetherplatform.cloud (production);
-  # use https://dev.api.aetherplatform.cloud for the dev environment (or AETHER_ENDPOINT).
+  # endpoint defaults to https://api.norkeel.com (production);
+  # use https://dev.api.norkeel.com for the dev environment (or AETHER_ENDPOINT).
 }
 ```
