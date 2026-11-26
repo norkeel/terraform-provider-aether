@@ -22,7 +22,7 @@ import (
 	"github.com/plane-shift/terraform-provider-aether/internal/provider/transport"
 )
 
-const defaultEndpoint = "https://api.aetherplatform.cloud"
+const defaultEndpoint = "https://api.norkeel.com"
 
 // providerData is what every resource and data source receives from Configure.
 type providerData struct {
@@ -41,7 +41,8 @@ type providerData struct {
 	// memberships (aether_organization_member). One provider process serves
 	// one Terraform run, so this stops parallel owner deletes in a run from
 	// each seeing the other as "another owner"; it cannot reach the portal
-	// or another run (the API has no guard, aether-api #302). providerData is
+	// or another run (the API refuses that case itself with 409 last_owner
+	// where it enforces organization roles). providerData is
 	// shared by pointer and never copied.
 	ownerDeleteMu sync.Mutex
 }

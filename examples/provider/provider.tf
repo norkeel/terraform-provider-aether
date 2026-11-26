@@ -14,9 +14,9 @@ variable "aether_api_token" {
   default   = null # unset here so the provider falls back to AETHER_API_TOKEN
 }
 
-# Create an API token in the Aether portal first (Settings → API Tokens).
+# Create an API token in the Aether portal first (Settings → API Tokens). Role: Admin (the default).
 provider "aether" {
   api_token = var.aether_api_token # or AETHER_API_TOKEN
-  # endpoint defaults to https://api.aetherplatform.cloud (production);
-  # use https://dev.api.aetherplatform.cloud for the dev environment (or AETHER_ENDPOINT).
+  # endpoint defaults to https://api.norkeel.com (production);
+  # use https://dev.api.norkeel.com for the dev environment (or AETHER_ENDPOINT).
 }
