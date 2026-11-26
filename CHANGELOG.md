@@ -41,6 +41,8 @@ NOTES:
   still be written in lower case in configuration.
 * An API token is not tied to the member who created it. After removing an
   owner, revoke the API tokens they created.
+* docs: the provider index and the README name the service status page,
+  [status.norkeel.com](https://status.norkeel.com).
 
 ## 0.1.0 (2026-10-12)
 
