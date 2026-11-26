@@ -1,0 +1,27 @@
+# Applied to api/openapi.yaml by oapi-codegen before generation (see
+# oapi-codegen.yaml). oapi-codegen 2.9.0 stopped adding `omitempty` to optional
+# nullable fields, which would make the provider send `"field": null` for every
+# pointer it leaves unset. To the API an explicit null often means "clear this
+# value", so the first two actions put `omitempty` back.
+#
+# The last two actions undo that for properties that are REQUIRED and nullable:
+# there a null must reach the wire (a null `quota_gb` reverts an org to the
+# platform default). TestContract_RequiredNullableFieldsAreListedInTheOverlay fails when the
+# vendored spec gains such a property that is not listed here.
+overlay: 1.0.0
+info:
+  title: Keep optional nullable fields out of requests when unset
+  version: 1.0.0
+actions:
+  - target: "$..properties[?@.type[?@ == 'null']]"
+    update:
+      x-omitempty: true
+  - target: "$..properties[?@.oneOf[?@.type == 'null']]"
+    update:
+      x-omitempty: true
+  - target: "$.components.schemas.SharedStorageQuota.properties['configured_gb','observed_quota_bytes','observed_used_bytes']"
+    update:
+      x-omitempty: false
+  - target: "$.paths['/api/v1/admin/organizations/{orgID}/storage-quota'].put.requestBody.content['application/json'].schema.properties.quota_gb"
+    update:
+      x-omitempty: false
