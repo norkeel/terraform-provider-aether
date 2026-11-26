@@ -23,6 +23,14 @@ ENHANCEMENTS:
 
 NOTES:
 
+* provider: the default `endpoint` is now `https://api.norkeel.com` (was
+  `https://api.aetherplatform.cloud`), and the dev API is
+  `https://dev.api.norkeel.com`. Both names reach the same API today. The old
+  names will answer with a permanent redirect, and the provider refuses to
+  follow a redirect because it would send the API token to another host. A
+  configuration or an `AETHER_ENDPOINT` that names an old host must be changed
+  to the new one, and configurations that set no endpoint need this provider
+  version.
 * Only an organization owner can create API tokens (portal, Settings → API
   Tokens). An organization token acts with the `admin` role on everything the
   provider manages, may add members with any role (`owner` included) and may

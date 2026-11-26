@@ -22,7 +22,7 @@ import (
 	"github.com/plane-shift/terraform-provider-aether/internal/provider/transport"
 )
 
-const defaultEndpoint = "https://api.aetherplatform.cloud"
+const defaultEndpoint = "https://api.norkeel.com"
 
 // providerData is what every resource and data source receives from Configure.
 type providerData struct {

@@ -1,6 +1,6 @@
 # Terraform / OpenTofu provider for Aether
 
-Manage [Aether](https://zenyth.aetherplatform.cloud) managed Kubernetes clusters, node pools,
+Manage [Aether](https://bridge.norkeel.com) managed Kubernetes clusters, node pools,
 network policy, organization membership, webhooks, the container registry and the billing
 budget as code. The provider works with **Terraform 1.5+** and **OpenTofu 1.6+** and is
 published under the same address, `plane-shift/aether`, on both registries.
@@ -47,10 +47,10 @@ operation` (`403 token_not_permitted`), with the API message and request id in t
 
 ## Endpoint
 
-| Environment | `endpoint` / `AETHER_ENDPOINT`                  |
-|-------------|-------------------------------------------------|
-| Production  | `https://api.aetherplatform.cloud` (default)    |
-| Dev         | `https://dev.api.aetherplatform.cloud`          |
+| Environment | `endpoint` / `AETHER_ENDPOINT`        |
+|-------------|---------------------------------------|
+| Production  | `https://api.norkeel.com` (default)   |
+| Dev         | `https://dev.api.norkeel.com`         |
 
 The endpoint must be `https` (plain `http` is accepted only for a loopback host) because the
 token is sent on every request.
