@@ -48,7 +48,7 @@ token is sent on every request.
 
 ## Service status
 
-Platform incidents and maintenance are published at https://status.aetherplatform.cloud. Check it before opening a support ticket when the API returns 5xx responses.
+Platform incidents and maintenance are published at [status.norkeel.com](https://status.norkeel.com). Check it before opening a support ticket when the API returns 5xx responses.
 
 ## ⚠ State contains secrets
 
