@@ -140,8 +140,8 @@ func (r *robotAccountResource) Create(ctx context.Context, req resource.CreateRe
 	}
 	var created robotAccountWire
 	if err := json.Unmarshal(res.Body, &created); err != nil || created.ID == "" || created.Token == nil {
-		resp.Diagnostics.AddError("Aether API created the robot account but returned no usable body",
-			describeUndecodable(res.HTTPResponse, res.Status(), err, "id or secret")+". The robot account was probably created, but it is not recorded in state and its secret is lost: delete it through the API or the portal and apply again.")
+		resp.Diagnostics.AddError("Norkeel API created the robot account but returned no usable body",
+			describeUndecodable(res.HTTPResponse, res.Status(), err, "id or secret")+". The robot account was probably created, but it is not recorded in state and its secret is lost: delete it through the API or the Bridge and apply again.")
 		return
 	}
 	resp.Diagnostics.Append(flattenRobot(ctx, &created, &plan)...)
@@ -294,7 +294,7 @@ func pageRobotAccounts(ctx context.Context, pd *providerData, visit func([]robot
 			Items *[]robotAccountWire `json:"items"`
 		}
 		if err := json.Unmarshal(res.Body, &page); err != nil || page.Items == nil {
-			diags.AddError("Aether API returned no usable robot account list", describeUndecodable(res.HTTPResponse, res.Status(), err, "items"))
+			diags.AddError("Norkeel API returned no usable robot account list", describeUndecodable(res.HTTPResponse, res.Status(), err, "items"))
 			return diags
 		}
 		items := *page.Items
@@ -309,7 +309,7 @@ func pageRobotAccounts(ctx context.Context, pd *providerData, visit func([]robot
 			// The list is ORDER BY id over canonical lower-case UUIDs, so the
 			// cursor must strictly advance; a page that repeats or goes back
 			// would loop forever (T11-19).
-			diags.AddError("Aether API returned an unusable robot account list",
+			diags.AddError("Norkeel API returned an unusable robot account list",
 				fmt.Sprintf("Paging with cursor %q returned a page ending at %q, which does not advance past the cursor.", cursor, next))
 			return diags
 		}

@@ -129,13 +129,13 @@ func (d *auditLogDataSource) Read(ctx context.Context, req datasource.ReadReques
 		Items *[]auditEventWire `json:"items"`
 	}
 	if err := json.Unmarshal(body, &page); err != nil || page.Items == nil {
-		resp.Diagnostics.AddError("Aether API returned no usable audit log", describeUndecodable(hr, hr.Status, err, "items"))
+		resp.Diagnostics.AddError("Norkeel API returned no usable audit log", describeUndecodable(hr, hr.Status, err, "items"))
 		return
 	}
 	out := auditLogModel{Limit: types.Int64Value(int64(limit)), Events: make([]auditEventDataModel, 0, len(*page.Items))}
 	for _, e := range *page.Items {
 		if e.ID == "" || e.CreatedAt == nil {
-			resp.Diagnostics.AddError("Aether API returned no usable audit log", describeJSONWithout(hr, hr.Status, "event id or created_at"))
+			resp.Diagnostics.AddError("Norkeel API returned no usable audit log", describeJSONWithout(hr, hr.Status, "event id or created_at"))
 			return
 		}
 		for _, f := range []struct {
@@ -147,14 +147,14 @@ func (d *auditLogDataSource) Read(ctx context.Context, req datasource.ReadReques
 			{"resource_type", e.ResourceType},
 		} {
 			if f.val == nil {
-				resp.Diagnostics.AddError("Aether API returned an incomplete audit event",
+				resp.Diagnostics.AddError("Norkeel API returned an incomplete audit event",
 					fmt.Sprintf("Event %s: %s.", e.ID, describeJSONWithout(hr, hr.Status, fmt.Sprintf("missing required field %q", f.name))))
 				return
 			}
 		}
 		md, err := compactMetadata(e.Metadata)
 		if err != nil {
-			resp.Diagnostics.AddError("Aether API returned an unreadable audit event",
+			resp.Diagnostics.AddError("Norkeel API returned an unreadable audit event",
 				fmt.Sprintf("Event %s carries metadata that is not valid JSON: %s.", e.ID, err))
 			return
 		}

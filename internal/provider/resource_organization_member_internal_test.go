@@ -28,8 +28,8 @@ func memberSchemaDescriptions(t *testing.T) (resourceDesc, roleDesc string) {
 // Terraform-created member may be unable to sign in).
 func Test_organizationMember_DescriptionCarriesTheT910SentenceVerbatim(t *testing.T) {
 	desc, _ := memberSchemaDescriptions(t)
-	const want = "The API creates the membership only. The address must already have an Aether login account " +
-		"(created through the portal invitation flow; aether-api #302), otherwise the member cannot sign in. " +
+	const want = "The API creates the membership only. The address must already have a Norkeel login account " +
+		"(created through the Bridge invitation flow; aether-api #302), otherwise the member cannot sign in. " +
 		"Destroying the resource removes the membership and leaves the login account in place."
 	if !strings.Contains(desc, want) {
 		t.Fatalf("resource description lacks the T9-10 sentence verbatim:\n%s", desc)
@@ -74,11 +74,11 @@ func Test_organizationMember_DescriptionsStateCaseInsensitiveEmails(t *testing.T
 
 // Fails if the resource description drops the instruction to revoke a removed
 // owner's API tokens (a token outlives the membership of whoever created it),
-// or the portal path where that is done.
+// or the Bridge path where that is done.
 func Test_organizationMember_DescriptionTellsToRevokeARemovedOwnersTokens(t *testing.T) {
 	desc, _ := memberSchemaDescriptions(t)
 	const want = "An API token is not tied to the member who created it: after removing an owner " +
-		"(or replacing their membership with a lower role), revoke the API tokens they created in the portal (**Settings → API Tokens**)."
+		"(or replacing their membership with a lower role), revoke the API tokens they created in the Bridge (**Settings → API Tokens**)."
 	if !strings.Contains(desc, want) {
 		t.Fatalf("resource description lacks the revoke-tokens sentence verbatim:\n%s", desc)
 	}

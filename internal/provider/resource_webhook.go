@@ -242,7 +242,7 @@ func (r *webhookResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 	if res.JSON201 == nil {
-		resp.Diagnostics.AddError("Aether API accepted the webhook but returned no usable body",
+		resp.Diagnostics.AddError("Norkeel API accepted the webhook but returned no usable body",
 			describeNonJSON(res.HTTPResponse, res.Status())+". The webhook was probably created, but it is not recorded in state and its secret is lost: delete it through the API, or import it by its id and set `rotate_secret` to obtain a secret.")
 		return
 	}
@@ -261,7 +261,7 @@ func (r *webhookResource) Create(ctx context.Context, req resource.CreateRequest
 		// call is not attempted: the replacement makes it moot.
 		plan.Secret = types.StringNull()
 		resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
-		resp.Diagnostics.AddError("Aether API returned the webhook without a signing secret",
+		resp.Diagnostics.AddError("Norkeel API returned the webhook without a signing secret",
 			"The webhook was created, but the API's answer carried no signing secret. It is saved in state and marked tainted: the next apply replaces it. If the configuration sets `enabled = false`, the disable call was skipped: the webhook was created ENABLED, so it may be receiving events until the next apply replaces it.")
 		return
 	}
@@ -313,7 +313,7 @@ func (r *webhookResource) Read(ctx context.Context, req resource.ReadRequest, re
 		addAPIError(&resp.Diagnostics, g.StatusCode(), g.HTTPResponse.Header, g.Body, path.Empty())
 		return
 	case g.JSON200 == nil:
-		resp.Diagnostics.AddError("Aether API returned no usable webhook", describeNonJSON(g.HTTPResponse, g.Status()))
+		resp.Diagnostics.AddError("Norkeel API returned no usable webhook", describeNonJSON(g.HTTPResponse, g.Status()))
 		return
 	}
 	resp.Diagnostics.Append(flattenWebhook(ctx, g.JSON200, &state)...)
@@ -436,7 +436,7 @@ func (r *webhookResource) put(ctx context.Context, rawID string, body client.Upd
 		return nil, diags
 	}
 	if res.JSON200 == nil {
-		diags.AddError("Aether API accepted the webhook update but returned no usable body",
+		diags.AddError("Norkeel API accepted the webhook update but returned no usable body",
 			describeNonJSON(res.HTTPResponse, res.Status())+". The update was probably applied, but state still holds the previous values: apply again (the update is idempotent).")
 		return nil, diags
 	}
@@ -461,7 +461,7 @@ func (r *webhookResource) rotate(ctx context.Context, rawID string) (*client.Web
 		return nil, diags
 	}
 	if res.JSON200 == nil || res.JSON200.Secret == nil {
-		diags.AddError("Aether API rotated the webhook secret but returned no usable body",
+		diags.AddError("Norkeel API rotated the webhook secret but returned no usable body",
 			describeNonJSON(res.HTTPResponse, res.Status())+" (or no secret). The secret was probably rotated and the new one is lost; state keeps the old one: change `rotate_secret` again to obtain a new secret.")
 		return nil, diags
 	}

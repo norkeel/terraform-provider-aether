@@ -57,11 +57,11 @@ func TestDataSourceLoadBalancers_DecodesTheRealShape(t *testing.T) {
 // m5 (review round 1) / n1 SUMMARY (review round 2, deviation 2, DEFERRED at
 // r2 time): a 200 whose body is valid JSON but carries no "items" key at all
 // must be an error, not a silently-empty list. The shared nonJSONSummary
-// ("Aether API answered 200 without a JSON body") is inaccurate for this
+// ("Norkeel API answered 200 without a JSON body") is inaccurate for this
 // branch - the body IS JSON, it just has no "items" list, and the detail
 // already says so - so this is pinned on the accurate summary round 2 asks
 // for instead: wording that names both "JSON" and "no \"items\"" without
-// claiming there is no JSON body at all (e.g. "Aether API answered 200 with
+// claiming there is no JSON body at all (e.g. "Norkeel API answered 200 with
 // JSON that has no \"items\" list"). RED against current HEAD, since the
 // datasource still reports nonJSONSummary for this branch (measured: the
 // looser "no items list" fragment alone is already present in today's

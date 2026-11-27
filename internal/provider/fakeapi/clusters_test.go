@@ -592,7 +592,7 @@ func TestUpgradeFromABareMinorStoredVersionIsNotACannotParse(t *testing.T) {
 	s := newClusterFake(t)
 	id := create(t, s, `{"name":"a","region":"r","k8s_version":"1.36"}`)["id"].(string)
 	getCluster(t, s, id)
-	s.SetStoredVersionAhead(id, "1.36") // bare minor, as a portal-started rollout might leave it
+	s.SetStoredVersionAhead(id, "1.36") // bare minor, as a Bridge-started rollout might leave it
 	resp, b := call(t, s, http.MethodPost, upgradePath(id), `{"target_version":"1.37"}`)
 	if resp.StatusCode != 202 {
 		t.Fatalf("upgrade from stored 1.36 -> 1.37 = %d %s, want 202", resp.StatusCode, b)

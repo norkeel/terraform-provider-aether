@@ -63,7 +63,7 @@ func decodeHarborPage[T any](hr *http.Response, status string, body []byte) ([]T
 	var diags diag.Diagnostics
 	var page harborListWire[T]
 	if err := json.Unmarshal(body, &page); err != nil || page.Items == nil {
-		diags.AddError("Aether API returned no usable registry list", describeUndecodable(hr, status, err, "items"))
+		diags.AddError("Norkeel API returned no usable registry list", describeUndecodable(hr, status, err, "items"))
 		return nil, "", diags
 	}
 	next := ""
@@ -120,7 +120,7 @@ func (d *registryRepositoriesDataSource) Read(ctx context.Context, _ datasource.
 		}
 		for _, it := range items {
 			if it.Name == "" {
-				diags.AddError("Aether API returned no usable registry list", describeJSONWithout(hr, hr.Status, "repository name"))
+				diags.AddError("Norkeel API returned no usable registry list", describeJSONWithout(hr, hr.Status, "repository name"))
 				return nil, "", pageFailure(diags)
 			}
 		}

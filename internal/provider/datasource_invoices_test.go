@@ -56,7 +56,7 @@ func TestInvoicesDataSource_ReadRawFieldsNoPIITwoPages(t *testing.T) {
 			InvoiceNumber: fmt.Sprintf("AE-2020-%04d", i),
 			SubtotalCents: 10000 + int64(i), TaxCents: 1900, TotalCents: 11900 + int64(i),
 			TaxRateBP: 1900, TaxNote: "VAT 19%", Status: "issued",
-			Issuer: map[string]any{"legal_name": "Aether SRL"},
+			Issuer: map[string]any{"legal_name": "Norkeel SRL"},
 			Buyer:  map[string]any{"billing_email": "buyer@example.com"},
 		})
 		if i == 0 {

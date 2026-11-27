@@ -133,7 +133,7 @@ func (s *Server) SeedMemberWithID(org, id, email, role string) {
 }
 
 // SetMemberRole changes a stored member's role out of band (no request is
-// recorded), as the portal or an owner login could. It reports whether the
+// recorded), as the Bridge or an owner login could. It reports whether the
 // member exists. No validation: any string is stored.
 func (s *Server) SetMemberRole(org, id, role string) bool {
 	s.orgStore.mu.Lock()

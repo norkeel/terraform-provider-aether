@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -61,9 +60,7 @@ func (d *regionsDataSource) Read(ctx context.Context, _ datasource.ReadRequest, 
 		return
 	}
 	if res.JSON200 == nil {
-		resp.Diagnostics.AddError("Aether API answered 200 without a JSON body",
-			fmt.Sprintf("GET %s returned %s with content type %q.",
-				res.HTTPResponse.Request.URL, res.Status(), res.HTTPResponse.Header.Get("Content-Type")))
+		addNoJSONBodyError(&resp.Diagnostics, res.HTTPResponse, res.Status())
 		return
 	}
 	out := regionsModel{Regions: []regionModel{}}

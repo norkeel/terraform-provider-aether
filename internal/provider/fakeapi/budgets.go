@@ -135,7 +135,7 @@ func (s *Server) SeedBudget(org string, limit float64, thresholds []int) string 
 }
 
 // RemoveBudget deletes a budget out of band (no request is recorded), as a
-// portal deletion or a test simulating "removed elsewhere" needs.
+// Bridge deletion or a test simulating "removed elsewhere" needs.
 func (s *Server) RemoveBudget(org string) {
 	bs := &s.budgets
 	bs.mu.Lock()

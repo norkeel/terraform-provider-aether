@@ -239,7 +239,7 @@ func decodeLax(body []byte, v any) bool {
 
 // Disable removes org's registry row AND every robot account of the org, out
 // of band (no request recorded) - what a real DELETE /registry does, or what
-// another caller (the portal, another token) could do without this test's
+// another caller (the Bridge, another token) could do without this test's
 // Terraform run seeing it. Used to simulate the registry going away between
 // two plans.
 func (s *Server) Disable(org string) {
@@ -333,7 +333,7 @@ func (s *Server) ClearRobotDeleteFailure(org, id string) {
 // nil slice reads back as JSON null, and each map's value can be a string,
 // float64, bool or absent, reproducing what a non-Terraform client (or a
 // legacy row) can leave behind (§9 U3, e.g. {"type":"tag_count","op":"gt",
-// "value":10} or the fail-open portal shape {"type":"untagged"}).
+// "value":10} or the fail-open Bridge shape {"type":"untagged"}).
 func (s *Server) SeedPolicy(org, name, action string, conditions []map[string]any, repoScope []string, schedule string, enabled bool) string {
 	rs := &s.registries
 	rs.mu.Lock()

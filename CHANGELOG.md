@@ -5,7 +5,7 @@ generated changelog is disabled (`.goreleaser.yml`).
 
 ## 0.1.1 (Unreleased)
 
-The Aether API now enforces organization roles on every request. No resource,
+The Norkeel API now enforces organization roles on every request. No resource,
 data source or attribute changes; the provider keeps calling the same routes.
 
 ENHANCEMENTS:
@@ -15,7 +15,7 @@ ENHANCEMENTS:
   `The API token's organization role does not allow this operation`, and
   `403 token_not_permitted` as `API tokens cannot perform this operation`. The
   detail carries the API message and the request id. Other `401`/`403` answers
-  keep the existing `Aether API rejected the request` diagnostic.
+  keep the generic `Norkeel API rejected the request` diagnostic.
 * resource/aether_organization_member: the API's `409 last_owner` on a member
   removal is reported as `Cannot remove the organization's last owner`. The
   provider's own last-owner check still runs before any removal is sent; its
@@ -23,6 +23,16 @@ ENHANCEMENTS:
 
 NOTES:
 
+* Diagnostics, attribute descriptions and the documentation now say Norkeel
+  and the Bridge (the web console) where they said Aether and the portal.
+  Wording only: the provider address, the `aether_*` resource and data source
+  names and the `AETHER_*` environment variables are unchanged. Checks that
+  match diagnostic text (for example `Aether API rejected the request`) must
+  be updated.
+* provider: the `api_token` description gives the token prefix as `norkeel_`,
+  which is what the API issues now. Tokens that start with `aether_` were
+  issued before the rename and keep working; the provider does not look at
+  the prefix.
 * provider: the default `endpoint` is now `https://api.norkeel.com` (was
   `https://api.aetherplatform.cloud`), and the dev API is
   `https://dev.api.norkeel.com`. Both names reach the same API today. The old
@@ -31,7 +41,7 @@ NOTES:
   configuration or an `AETHER_ENDPOINT` that names an old host must be changed
   to the new one, and configurations that set no endpoint need this provider
   version.
-* Only an organization owner can create API tokens (portal, Settings → API
+* Only an organization owner can create API tokens (the Bridge, Settings → API
   Tokens). An organization token acts with the `admin` role on everything the
   provider manages, may add members with any role (`owner` included) and may
   remove owners except the last one.

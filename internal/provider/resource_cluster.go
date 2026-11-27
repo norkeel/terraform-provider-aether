@@ -231,7 +231,7 @@ func (r *clusterResource) ModifyPlan(ctx context.Context, req resource.ModifyPla
 	}
 	if !fwd {
 		resp.Diagnostics.AddAttributeError(path.Root("k8s_version"), "Kubernetes downgrade is not supported",
-			fmt.Sprintf("k8s_version would move backwards from %s to %s. Aether only upgrades clusters in place. To run an older version the cluster must be destroyed and created again: "+
+			fmt.Sprintf("k8s_version would move backwards from %s to %s. Norkeel only upgrades clusters in place. To run an older version the cluster must be destroyed and created again: "+
 				"`terraform destroy -target=<this resource address>` (or `terraform taint <this resource address>`), then `terraform apply`.", from, to))
 	}
 }
@@ -289,12 +289,12 @@ func (r *clusterResource) Create(ctx context.Context, req resource.CreateRequest
 	// ZERO UUID, and persisting it records
 	// 00000000-0000-0000-0000-000000000000 while the cluster that was really
 	// created is orphaned, unreferenced by any state and un-importable without
-	// hunting for it in the portal. Failing here instead leaves no state entry
+	// hunting for it in the Bridge. Failing here instead leaves no state entry
 	// at all, which is the recoverable outcome.
 	created := res.JSON202
 	if created == nil {
-		resp.Diagnostics.AddError("Aether API accepted the cluster but returned no usable body",
-			describeNonJSON(res.HTTPResponse, res.Status())+". The cluster may exist; check the portal before retrying, since a retry creates a second one.")
+		resp.Diagnostics.AddError("Norkeel API accepted the cluster but returned no usable body",
+			describeNonJSON(res.HTTPResponse, res.Status())+". The cluster may exist; check the Bridge before retrying, since a retry creates a second one.")
 		return
 	}
 	plan.ID = types.StringValue(created.Id.String()) // UUID -> canonical text for state
@@ -468,7 +468,7 @@ func (r *clusterResource) Update(ctx context.Context, req resource.UpdateRequest
 			resp.Diagnostics.AddWarning("Cluster is degraded", deref(c.StatusMessage))
 		}
 		// Nor must an upgrade that is still rolling out (started earlier, or
-		// from the portal): this branch deliberately does not wait (a no-op
+		// from the Bridge): this branch deliberately does not wait (a no-op
 		// update never blocks), so say that the control plane may not be at
 		// the stored version yet. A missing observed version counts only
 		// while the status says upgrading; before the first rollout settles

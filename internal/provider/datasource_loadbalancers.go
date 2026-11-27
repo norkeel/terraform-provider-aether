@@ -18,7 +18,7 @@ import (
 
 // noItemsSummary is the summary of the diagnostic for a 200 whose body is
 // valid JSON but lacks an "items" list, specific to this data source.
-const noItemsSummary = `Aether API answered 200 with JSON that has no "items" list`
+const noItemsSummary = `Norkeel API answered 200 with JSON that has no "items" list`
 
 var _ datasource.DataSourceWithConfigure = &loadBalancersDataSource{}
 

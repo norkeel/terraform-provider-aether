@@ -90,7 +90,7 @@ func rateLimitInt64(desc string) schema.Int64Attribute {
 func (r *clusterNetworkResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "The network policy of an `aether_cluster`: which source addresses may reach its public control-plane endpoint, and the API-server connection rate limit. There is exactly one policy per cluster. " +
-			"Creating this resource OVERWRITES whatever policy the cluster has (for example one set in the portal) with the configuration; import to adopt an existing policy instead. " +
+			"Creating this resource OVERWRITES whatever policy the cluster has (for example one set in the Bridge) with the configuration; import to adopt an existing policy instead. " +
 			"Destroying this resource OPENS the cluster's public endpoint to any source address and resets the API-server rate limit to the platform default. " +
 			"The platform applies the policy asynchronously; this resource never waits for enforcement. " +
 			"Do not set `create_before_destroy` on this resource: a replacement of the same cluster would run the destroy, which opens the endpoint, after the create.",
@@ -289,7 +289,7 @@ func (r *clusterNetworkResource) Read(ctx context.Context, req resource.ReadRequ
 		addAPIError(&resp.Diagnostics, g.StatusCode(), g.HTTPResponse.Header, g.Body, path.Empty())
 		return
 	case g.JSON200 == nil:
-		resp.Diagnostics.AddError("Aether API returned no usable cluster network policy", describeNonJSON(g.HTTPResponse, g.Status()))
+		resp.Diagnostics.AddError("Norkeel API returned no usable cluster network policy", describeNonJSON(g.HTTPResponse, g.Status()))
 		return
 	}
 	resp.Diagnostics.Append(flattenClusterNetwork(ctx, g.JSON200, &state)...)
@@ -431,7 +431,7 @@ func (r *clusterNetworkResource) put(ctx context.Context, m *clusterNetworkModel
 		if !creating {
 			advice = " The policy was probably written, but state still holds the previous policy: apply again (the PUT is idempotent)."
 		}
-		diags.AddError("Aether API accepted the cluster network policy but returned no usable body",
+		diags.AddError("Norkeel API accepted the cluster network policy but returned no usable body",
 			describeNonJSON(res.HTTPResponse, res.Status())+"."+advice)
 		return diags
 	}

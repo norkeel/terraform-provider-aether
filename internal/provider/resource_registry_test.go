@@ -54,7 +54,7 @@ resource "aether_registry" "r" {
 
 // rawCall issues a real HTTP request straight at the fake, bypassing
 // Terraform entirely - used to put the fake into a state ANOTHER caller (a
-// prior terraform run under a different state, the portal, a teammate's
+// prior terraform run under a different state, the Bridge, a teammate's
 // token) could have left it in, which is exactly what R3/R4/R5/R8 need to
 // seed and no fakeapi knob models (the registry subtree's own routes already
 // do the job; a caller only needs to reach them out of band).

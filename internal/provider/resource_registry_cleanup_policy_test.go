@@ -370,10 +370,10 @@ func TestCleanupPolicyResource_UpdateConditionsSendsFullPUTAndStateMatches(t *te
 // ---------------------------------------------------------------- C6
 
 // Fails if Read does not stringify a numeric condition value written by
-// another client (float64 10 -> "10"), or if it does not read the portal's
+// another client (float64 10 -> "10"), or if it does not read the Bridge's
 // fail-open shape ({"type":"untagged"}, no op/value) back as null op/value
 // with no error (§9 U3).
-func TestCleanupPolicyResource_ReadNormalisesNumericValueAndPortalShape(t *testing.T) {
+func TestCleanupPolicyResource_ReadNormalisesNumericValueAndBridgeShape(t *testing.T) {
 	api := setupFake(t)
 	id := api.SeedPolicy(testOrg, "p", "delete", []map[string]any{
 		{"type": "tag_count", "op": "gt", "value": float64(10)},
@@ -407,7 +407,7 @@ func TestCleanupPolicyResource_ReadNormalisesNumericValueAndPortalShape(t *testi
 				}
 				for _, k := range []string{"conditions.1.op", "conditions.1.value"} {
 					if v, has := a[k]; has {
-						return fmt.Errorf("%s = %q, want null (the portal's fail-open shape has neither key)", k, v)
+						return fmt.Errorf("%s = %q, want null (the Bridge's fail-open shape has neither key)", k, v)
 					}
 				}
 				return nil
@@ -749,7 +749,7 @@ func TestCleanupPolicyResource_UpdateAfterARunKeepsLastRunAt(t *testing.T) {
 }
 
 // Fails if Read does not stringify a BOOLEAN condition value (true ->
-// "true"), distinct from C6's numeric-value and portal-shape coverage
+// "true"), distinct from C6's numeric-value and Bridge-shape coverage
 // (m-3c).
 func TestCleanupPolicyResource_ReadNormalisesBooleanValue(t *testing.T) {
 	api := setupFake(t)

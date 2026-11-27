@@ -3,12 +3,12 @@
 page_title: "aether_kubeconfig Data Source - aether"
 subcategory: ""
 description: |-
-  The cluster's administrator kubeconfig, the same file the portal downloads. It grants cluster-admin: treat the Terraform state as a secret. It is available only while the cluster is running; a plan that reads it fails while the cluster is upgrading or degraded.
+  The cluster's administrator kubeconfig, the same file you can download from the Bridge. It grants cluster-admin: treat the Terraform state as a secret. It is available only while the cluster is running; a plan that reads it fails while the cluster is upgrading or degraded.
 ---
 
 # aether_kubeconfig (Data Source)
 
-The cluster's administrator kubeconfig, the same file the portal downloads. It grants cluster-admin: treat the Terraform state as a secret. It is available only while the cluster is `running`; a plan that reads it fails while the cluster is upgrading or degraded.
+The cluster's administrator kubeconfig, the same file you can download from the Bridge. It grants cluster-admin: treat the Terraform state as a secret. It is available only while the cluster is `running`; a plan that reads it fails while the cluster is upgrading or degraded.
 
 ## Example Usage
 

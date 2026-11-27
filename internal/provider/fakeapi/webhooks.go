@@ -203,7 +203,7 @@ func (s *Server) SeedWebhook(org, rawURL string, events []string, enabled bool) 
 }
 
 // RemoveWebhook deletes a webhook out of band (no request is recorded), as a
-// portal deletion or a webhook's own dead-lettering never does but a test
+// Bridge deletion or a webhook's own dead-lettering never does but a test
 // simulating "removed elsewhere" needs.
 func (s *Server) RemoveWebhook(org, id string) {
 	ws := &s.webhooks
@@ -232,7 +232,7 @@ func (s *Server) WebhookIDs(org string) []string {
 }
 
 // SetWebhookEvents overwrites a webhook's stored events out of band (no
-// request recorded, no validation, no updated_at bump) - a portal write or a
+// request recorded, no validation, no updated_at bump) - a Bridge write or a
 // direct DB edit could store duplicates the create/update validators refuse
 // (§2/§3, U2). It reports whether the webhook exists.
 func (s *Server) SetWebhookEvents(org, id string, events []string) bool {

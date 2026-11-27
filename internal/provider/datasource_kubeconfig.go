@@ -39,7 +39,7 @@ func (d *kubeconfigDataSource) Metadata(_ context.Context, req datasource.Metada
 
 func (d *kubeconfigDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "The cluster's administrator kubeconfig, the same file the portal downloads. It grants cluster-admin: treat the Terraform state as a secret. It is available only while the cluster is `running`; a plan that reads it fails while the cluster is upgrading or degraded.",
+		MarkdownDescription: "The cluster's administrator kubeconfig, the same file you can download from the Bridge. It grants cluster-admin: treat the Terraform state as a secret. It is available only while the cluster is `running`; a plan that reads it fails while the cluster is upgrading or degraded.",
 		Attributes: map[string]schema.Attribute{
 			"cluster_id": schema.StringAttribute{Required: true, Validators: []validator.String{canonicalIDValidator{}}, MarkdownDescription: "UUID of the cluster."},
 			"content": schema.StringAttribute{Computed: true, Sensitive: true,
@@ -86,12 +86,12 @@ func (d *kubeconfigDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		return
 	}
 	if len(body) > maxKubeconfigBytes {
-		resp.Diagnostics.AddError("Aether API answered 200 without a kubeconfig",
+		resp.Diagnostics.AddError("Norkeel API answered 200 without a kubeconfig",
 			fmt.Sprintf("GET %s returned a body larger than %d bytes, which is not a kubeconfig.", hr.Request.URL, maxKubeconfigBytes))
 		return
 	}
 	if len(bytes.TrimSpace(body)) == 0 || !bytes.Contains(body, []byte("apiVersion")) {
-		resp.Diagnostics.AddError("Aether API answered 200 without a kubeconfig",
+		resp.Diagnostics.AddError("Norkeel API answered 200 without a kubeconfig",
 			fmt.Sprintf("GET %s returned %s with content type %q and a body that is not a kubeconfig (%d bytes, no `apiVersion`).",
 				hr.Request.URL, hr.Status, hr.Header.Get("Content-Type"), len(body)))
 		return
