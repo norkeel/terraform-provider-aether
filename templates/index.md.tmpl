@@ -11,7 +11,7 @@ Works with Terraform 1.5+ and OpenTofu 1.6+.
 
 ## Prerequisite: an API token
 
-Create a token in the Bridge (Settings → API Tokens). Choose the role **Admin** (the default): the provider manages members, including owners, and an admin token is the only role that may. Only an organization **owner** can create API tokens. The token belongs to one organization; the provider uses that organization for every resource. Tokens are managed in the Bridge only — this provider has no resource for them.
+Create a token in the Bridge, the Norkeel web console at [bridge.norkeel.com](https://bridge.norkeel.com) (Settings → API Tokens). Choose the role **Admin** (the default): the provider manages members, including owners, and an admin token is the only role that may. Only an organization **owner** can create API tokens. The token belongs to one organization; the provider uses that organization for every resource. Tokens are managed in the Bridge only — this provider has no resource for them.
 
 ### What a token may do
 

@@ -122,7 +122,7 @@ func (p *aetherProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	orgID := firstNonEmpty(cfg.OrganizationID.ValueString(), os.Getenv("AETHER_ORGANIZATION_ID"))
 	if token == "" {
 		resp.Diagnostics.AddAttributeError(path.Root("api_token"), "Missing API token",
-			"Set api_token in the provider block or the AETHER_API_TOKEN environment variable. Tokens are created in the Bridge.")
+			"Set api_token in the provider block or the AETHER_API_TOKEN environment variable. Tokens are created in the Bridge, the Norkeel web console (Settings → API Tokens).")
 		return
 	}
 
@@ -181,7 +181,7 @@ func (p *aetherProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		// across different HOSTNAMES, ignoring the port, and it cannot strip
 		// a header a RoundTripper adds afterwards.
 		CheckRedirect: func(req *http.Request, _ []*http.Request) error {
-			return fmt.Errorf("refusing to follow a redirect to %s: the Norkeel API does not redirect, and following one would send the API token to that host", req.URL.Redacted())
+			return fmt.Errorf("refusing to follow a redirect to %s: following one would send the API token to that host. If endpoint (or AETHER_ENDPOINT) names a former API host, change it to the current one (production is %s)", req.URL.Redacted(), defaultEndpoint)
 		},
 	}
 	c, err := client.NewClientWithResponses(endpoint, client.WithHTTPClient(httpClient))

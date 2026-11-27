@@ -373,7 +373,7 @@ func TestCleanupPolicyResource_UpdateConditionsSendsFullPUTAndStateMatches(t *te
 // another client (float64 10 -> "10"), or if it does not read the Bridge's
 // fail-open shape ({"type":"untagged"}, no op/value) back as null op/value
 // with no error (§9 U3).
-func TestCleanupPolicyResource_ReadNormalisesNumericValueAndPortalShape(t *testing.T) {
+func TestCleanupPolicyResource_ReadNormalisesNumericValueAndBridgeShape(t *testing.T) {
 	api := setupFake(t)
 	id := api.SeedPolicy(testOrg, "p", "delete", []map[string]any{
 		{"type": "tag_count", "op": "gt", "value": float64(10)},
