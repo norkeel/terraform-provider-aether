@@ -291,7 +291,7 @@ func (r *billingBudgetResource) get(ctx context.Context) (*client.Budget, bool, 
 		addAPIError(&diags, g.StatusCode(), g.HTTPResponse.Header, g.Body, path.Empty())
 		return nil, false, diags
 	case g.JSON200 == nil:
-		diags.AddError("Aether API returned no usable billing budget", describeNonJSON(g.HTTPResponse, g.Status()))
+		diags.AddError("Norkeel API returned no usable billing budget", describeNonJSON(g.HTTPResponse, g.Status()))
 		return nil, false, diags
 	}
 	return g.JSON200, true, diags
@@ -324,7 +324,7 @@ func (r *billingBudgetResource) put(ctx context.Context, m *billingBudgetModel, 
 		if !creating {
 			advice = " The budget was probably written, but state still holds the previous budget: apply again."
 		}
-		diags.AddError("Aether API accepted the billing budget but returned no usable body",
+		diags.AddError("Norkeel API accepted the billing budget but returned no usable body",
 			describeNonJSON(res.HTTPResponse, res.Status())+"."+advice)
 		return diags
 	}

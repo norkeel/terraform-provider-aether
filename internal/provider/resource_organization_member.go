@@ -70,11 +70,11 @@ func (r *organizationMemberResource) Metadata(_ context.Context, req resource.Me
 func (r *organizationMemberResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "A member of the provider's organization. " +
-			"The API creates the membership only. The address must already have an Aether login account (created through the portal invitation flow; aether-api #302), otherwise the member cannot sign in. Destroying the resource removes the membership and leaves the login account in place. " +
+			"The API creates the membership only. The address must already have a Norkeel login account (created through the Bridge invitation flow; aether-api #302), otherwise the member cannot sign in. Destroying the resource removes the membership and leaves the login account in place. " +
 			"There is no in-place update: changing `email` or `role` replaces the membership (it is removed, then created again with a new `id`). Do not set `create_before_destroy`: the new membership would be created while the old one still holds the address, which the API refuses (409). " +
 			"Member emails are compared case-insensitively: adding an address that differs from an existing member's only in letter case is refused (409). " +
-			"Removing or replacing the organization's last `owner` is refused, because nobody could change roles or delete the organization afterwards. The provider checks the member's current role before sending the removal, serialised within a single run; the API also refuses to remove the last owner (409 `last_owner`), which covers a concurrent removal in the portal or another run. " +
-			"An API token is not tied to the member who created it: after removing an owner (or replacing their membership with a lower role), revoke the API tokens they created in the portal (**Settings → API Tokens**). " +
+			"Removing or replacing the organization's last `owner` is refused, because nobody could change roles or delete the organization afterwards. The provider checks the member's current role before sending the removal, serialised within a single run; the API also refuses to remove the last owner (409 `last_owner`), which covers a concurrent removal in the Bridge or another run. " +
+			"An API token is not tied to the member who created it: after removing an owner (or replacing their membership with a lower role), revoke the API tokens they created in the Bridge (**Settings → API Tokens**). " +
 			"Transferring ownership takes two applies: add the new owner first, then demote or remove the old one in a second apply. Doing both in a single apply is refused by the last-owner guard or depends on the order in which Terraform happens to run the two changes.",
 		Attributes: map[string]schema.Attribute{
 			"id": immutableComputed("Membership UUID (not a user id). It changes when the membership is replaced."),
@@ -84,7 +84,7 @@ func (r *organizationMemberResource) Schema(_ context.Context, _ resource.Schema
 				Validators:          []validator.String{memberEmailValidator{}}},
 			"role": schema.StringAttribute{Required: true,
 				MarkdownDescription: "One of `owner`, `admin`, `member`, `viewer`. Changing it replaces the membership: a DELETE followed by a POST, which gives the membership a new `id`. " +
-					"The portal never offers `owner`. An `owner` can be demoted from Terraform like any other role; only the last owner is protected, and removing or replacing it is refused.",
+					"The Bridge never offers `owner`. An `owner` can be demoted from Terraform like any other role; only the last owner is protected, and removing or replacing it is refused.",
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 				Validators:    []validator.String{stringvalidator.OneOf("owner", "admin", "member", "viewer")}},
 			"invited_by":  immutableComputed("UUID of the user who invited the member. Always null for a membership created through the API."),
@@ -151,8 +151,8 @@ func (r *organizationMemberResource) Create(ctx context.Context, req resource.Cr
 		return
 	}
 	if res.JSON201 == nil {
-		resp.Diagnostics.AddError("Aether API accepted the member but returned no usable body",
-			describeNonJSON(res.HTTPResponse, res.Status())+". The membership was probably created, but it is not recorded in state: import it by its id, or remove it in the portal and apply again.")
+		resp.Diagnostics.AddError("Norkeel API accepted the member but returned no usable body",
+			describeNonJSON(res.HTTPResponse, res.Status())+". The membership was probably created, but it is not recorded in state: import it by its id, or remove it in the Bridge and apply again.")
 		return
 	}
 	flattenMember(res.JSON201, &plan)
@@ -186,7 +186,7 @@ func (r *organizationMemberResource) Read(ctx context.Context, req resource.Read
 		addAPIError(&resp.Diagnostics, g.StatusCode(), g.HTTPResponse.Header, g.Body, path.Empty())
 		return
 	case g.JSON200 == nil:
-		resp.Diagnostics.AddError("Aether API returned no usable organization member", describeNonJSON(g.HTTPResponse, g.Status()))
+		resp.Diagnostics.AddError("Norkeel API returned no usable organization member", describeNonJSON(g.HTTPResponse, g.Status()))
 		return
 	}
 	flattenMember(g.JSON200, &state)
@@ -218,7 +218,7 @@ func (r *organizationMemberResource) Update(ctx context.Context, req resource.Up
 // manages both of the org's owners) would each see the other as "another
 // owner" and both succeed, leaving the organization with none. The lock is
 // per provider process, i.e. per Terraform run: it cannot serialise against
-// the portal or a second run - that case is the API's 409 last_owner, which
+// the Bridge or a second run - that case is the API's 409 last_owner, which
 // addAPIError renders as "Cannot remove the organization's last owner".
 // Non-owner deletes take neither the lock nor the list.
 func (r *organizationMemberResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -244,7 +244,7 @@ func (r *organizationMemberResource) Delete(ctx context.Context, req resource.De
 		addAPIError(&resp.Diagnostics, g.StatusCode(), g.HTTPResponse.Header, g.Body, path.Empty())
 		return
 	case g.JSON200 == nil:
-		resp.Diagnostics.AddError("Aether API returned no usable organization member", describeNonJSON(g.HTTPResponse, g.Status()))
+		resp.Diagnostics.AddError("Norkeel API returned no usable organization member", describeNonJSON(g.HTTPResponse, g.Status()))
 		return
 	}
 	if g.JSON200.Role == client.MemberRoleOwner {
@@ -297,7 +297,7 @@ func (r *organizationMemberResource) guardLastOwner(ctx context.Context, id clie
 			addAPIError(&diags, res.StatusCode(), res.HTTPResponse.Header, res.Body, path.Empty())
 			return false, diags
 		case res.JSON200 == nil:
-			diags.AddError("Aether API returned no usable member list", describeNonJSON(res.HTTPResponse, res.Status()))
+			diags.AddError("Norkeel API returned no usable member list", describeNonJSON(res.HTTPResponse, res.Status()))
 			return false, diags
 		}
 		for _, m := range res.JSON200.Items {
@@ -313,7 +313,7 @@ func (r *organizationMemberResource) guardLastOwner(ctx context.Context, id clie
 		}
 		cursor, err := parseID(*next)
 		if err != nil {
-			diags.AddError("Aether API returned an unusable member list cursor", err.Error())
+			diags.AddError("Norkeel API returned an unusable member list cursor", err.Error())
 			return false, diags
 		}
 		// A cursor already followed would return the same page again: fail
@@ -330,7 +330,7 @@ func (r *organizationMemberResource) guardLastOwner(ctx context.Context, id clie
 		return true, diags
 	}
 	diags.AddAttributeError(path.Root("role"), "Cannot remove the organization's last owner", lastOwnerRefusal+
-		". Add another owner first (in the portal, or with another aether_organization_member), or remove this membership in the portal.")
+		". Add another owner first (in the Bridge, or with another aether_organization_member), or remove this membership in the Bridge.")
 	return false, diags
 }
 

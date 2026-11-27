@@ -29,7 +29,7 @@ resource "aether_organization" "this" {
 
 - `billing_email` (String) Address invoices are sent to. `""` clears it.
 - `name` (String) Display name of the organization. Must not be empty.
-- `slug` (String) URL-safe organization identifier (3-63 characters: lower-case letters, digits and hyphens, not starting or ending with a hyphen). It cannot be changed through Terraform: registry projects, storage billing and quota are keyed on it, and a rename would strand them for existing clusters (aether-api #303). Rename in the portal instead.
+- `slug` (String) URL-safe organization identifier (3-63 characters: lower-case letters, digits and hyphens, not starting or ending with a hyphen). It cannot be changed through Terraform: registry projects, storage billing and quota are keyed on it, and a rename would strand them for existing clusters (aether-api #303). Rename in the Bridge instead.
 - `vat_id` (String) VAT identification number. `""` clears it.
 
 ### Read-Only

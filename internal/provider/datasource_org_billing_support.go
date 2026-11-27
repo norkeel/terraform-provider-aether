@@ -65,7 +65,7 @@ func addPageError(diags *diag.Diagnostics, summary string, err error) {
 // addNoJSONBodyError is the reference data source's error for a 200 whose
 // body the generated client could not decode (JSON200 == nil).
 func addNoJSONBodyError(diags *diag.Diagnostics, hr *http.Response, status string) {
-	diags.AddError("Aether API answered 200 without a JSON body",
+	diags.AddError(nonJSONSummary,
 		fmt.Sprintf("GET %s returned %s with content type %q.", hr.Request.URL, status, hr.Header.Get("Content-Type")))
 }
 

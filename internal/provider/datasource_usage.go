@@ -131,7 +131,7 @@ func (d *usageDataSource) Read(ctx context.Context, _ datasource.ReadRequest, re
 	var u usageWire
 	err = json.Unmarshal(body, &u)
 	if err != nil || u.PeriodStart == nil || u.PeriodEnd == nil || u.TotalEUR == nil || u.Subscriptions == nil {
-		resp.Diagnostics.AddError("Aether API returned no usable usage summary",
+		resp.Diagnostics.AddError("Norkeel API returned no usable usage summary",
 			describeUndecodable(hr, hr.Status, err, "period_start, period_end, total_eur or subscriptions"))
 		return
 	}

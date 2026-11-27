@@ -1,6 +1,6 @@
-# Terraform / OpenTofu provider for Aether
+# Terraform / OpenTofu provider for Norkeel
 
-Manage [Aether](https://bridge.norkeel.com) managed Kubernetes clusters, node pools,
+Manage [Norkeel](https://bridge.norkeel.com) managed Kubernetes clusters, node pools,
 network policy, organization membership, webhooks, the container registry and the billing
 budget as code. The provider works with **Terraform 1.5+** and **OpenTofu 1.6+** and is
 published under the same address, `plane-shift/aether`, on both registries.
@@ -30,10 +30,10 @@ same address on `registry.opentofu.org`. No other change is needed to switch eng
 
 ## Prerequisite: an API token
 
-Create an API token in the Aether portal (Settings → API Tokens). Choose the role **Admin** (the default): the provider manages members, including owners, and an admin token is the only role that may. Pass it as
+Create an API token in the Bridge (Settings → API Tokens). Choose the role **Admin** (the default): the provider manages members, including owners, and an admin token is the only role that may. Pass it as
 `api_token` or `AETHER_API_TOKEN`. A token belongs to one organization, and the provider
 manages that organization's resources (`organization_id` is resolved from the token; setting
-it explicitly is validated against the token). Tokens are created and revoked in the portal
+it explicitly is validated against the token). Tokens are created and revoked in the Bridge
 only — there is deliberately no `aether_api_token` resource.
 
 Only an organization **owner** can create an API token. The API enforces organization roles:
@@ -43,7 +43,7 @@ may add members with any role (`owner` included) and remove owners — except th
 (`409 last_owner`). A token is not tied to the member who created it, so after removing an
 owner, revoke the tokens they created. Refusals surface as `The API token's organization role
 does not allow this operation` (`403 insufficient_role`) or `API tokens cannot perform this
-operation` (`403 token_not_permitted`), with the API message and request id in the detail. For `insufficient_role`, use an API token with the Admin role (Settings → API Tokens); changing a member's role is open to no token and must be done in the portal, signed in as an organization owner.
+operation` (`403 token_not_permitted`), with the API message and request id in the detail. For `insufficient_role`, use an API token with the Admin role (Settings → API Tokens); changing a member's role is open to no token and must be done in the Bridge, signed in as an organization owner.
 
 ## Endpoint
 
@@ -75,7 +75,7 @@ the resource page before relying on these:
 - **`aether_node_pool`** — a vCPU/memory budget with max above min makes the pool autoscaling
   (hourly billing); `name`, `vcpus`, `memory_gb`, `disk_gb` replace the pool;
   `drain_timeout_seconds` cannot be removed once set (taint to recreate).
-- **`aether_cluster_network`** — creating it overwrites the portal policy; destroying it opens
+- **`aether_cluster_network`** — creating it overwrites any policy set in the Bridge; destroying it opens
   the endpoint to every source address.
 - **`aether_organization`** — import-only; **`aether_organization_member`** role changes replace
   the membership, the last owner cannot be removed (checked by the provider and refused by the

@@ -63,7 +63,7 @@ func (r *registryResource) Metadata(_ context.Context, req resource.MetadataRequ
 func (r *registryResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "The container registry of the provider's organization (one per organization). Creating this resource enables the registry and mints its default robot credential; " +
-			"`robot_username` and `robot_secret` are returned by the API only by that enable call. Credentials rotate in the portal, not through this resource. " +
+			"`robot_username` and `robot_secret` are returned by the API only by that enable call. Credentials rotate in the Bridge, not through this resource. " +
 			"Destroying this resource disables the registry. Without `purge_on_destroy` the images remain in the platform's project and are restored by a later enable; with it EVERY repository is deleted first (irreversible). " +
 			"Disabling also deletes EVERY robot account of the organization, including `aether_registry_robot_account` resources (they are recreated on the next apply) — order destroys with `depends_on` from the robot accounts to the registry. " +
 			"Cleanup policies are not affected.",
@@ -81,7 +81,7 @@ func (r *registryResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 				MarkdownDescription: "The default robot's `docker login` username. Known only from the enable call; import/adopt leaves them null (`robot_username` and `robot_secret`), and a refresh nulls them (with a warning) when the registry was disabled and re-enabled outside Terraform.",
 				PlanModifiers:       []planmodifier.String{stringplanmodifier.UseStateForUnknown()}},
 			"robot_secret": schema.StringAttribute{Computed: true, Sensitive: true,
-				MarkdownDescription: "The default robot's secret. Known only from the enable call; import/adopt leaves them null (`robot_username` and `robot_secret`), and a refresh nulls them (with a warning) when the registry was disabled and re-enabled outside Terraform. Credentials rotate in the portal, not through this resource.",
+				MarkdownDescription: "The default robot's secret. Known only from the enable call; import/adopt leaves them null (`robot_username` and `robot_secret`), and a refresh nulls them (with a warning) when the registry was disabled and re-enabled outside Terraform. Credentials rotate in the Bridge, not through this resource.",
 				PlanModifiers:       []planmodifier.String{stringplanmodifier.UseStateForUnknown()}},
 			// State-only: read by Delete, never sent anywhere else, so an
 			// in-place change makes zero API calls (T11-3).
@@ -123,8 +123,8 @@ func (r *registryResource) Create(ctx context.Context, req resource.CreateReques
 			if res.JSON201 != nil {
 				what = describeJSONWithout(res.HTTPResponse, res.Status(), "registry id")
 			}
-			resp.Diagnostics.AddError("Aether API enabled the registry but returned no usable body",
-				what+". The registry was probably enabled, but its credentials are lost: import it (`robot_username`/`robot_secret` stay null) and rotate the credentials in the portal.")
+			resp.Diagnostics.AddError("Norkeel API enabled the registry but returned no usable body",
+				what+". The registry was probably enabled, but its credentials are lost: import it (`robot_username`/`robot_secret` stay null) and rotate the credentials in the Bridge.")
 			return
 		}
 		flattenRegistry(&res.JSON201.Registry, &plan)
@@ -186,7 +186,7 @@ func (r *registryResource) Read(ctx context.Context, req resource.ReadRequest, r
 		state.RobotSecret = types.StringNull()
 		resp.Diagnostics.AddWarning("Registry was re-enabled outside Terraform",
 			fmt.Sprintf("The registry id changed from %q to %q: the registry was disabled and re-enabled outside Terraform, which deleted the default robot and minted a new one. "+
-				"The enable-time credentials are no longer known, so `robot_username` and `robot_secret` are now null — re-import or re-enable through Terraform to obtain new ones, or rotate them in the portal.",
+				"The enable-time credentials are no longer known, so `robot_username` and `robot_secret` are now null — re-import or re-enable through Terraform to obtain new ones, or rotate them in the Bridge.",
 				state.ID.ValueString(), reg.Id))
 	}
 	flattenRegistry(reg, &state)
@@ -280,12 +280,12 @@ func getRegistry(ctx context.Context, pd *providerData) (*client.Registry, bool,
 		return nil, false, diags
 	}
 	if g.JSON200 == nil {
-		diags.AddError("Aether API returned no usable registry", describeNonJSON(g.HTTPResponse, g.Status()))
+		diags.AddError("Norkeel API returned no usable registry", describeNonJSON(g.HTTPResponse, g.Status()))
 		return nil, false, diags
 	}
 	reg, err := g.JSON200.AsRegistry()
 	if err != nil {
-		diags.AddError("Aether API returned an unreadable registry", fmt.Sprintf("Cannot decode the registry: %s.", err))
+		diags.AddError("Norkeel API returned an unreadable registry", fmt.Sprintf("Cannot decode the registry: %s.", err))
 		return nil, false, diags
 	}
 	if !reg.Enabled {
@@ -295,7 +295,7 @@ func getRegistry(ctx context.Context, pd *providerData) (*client.Registry, bool,
 		// enabled=true without an id is neither shape the API sends. An
 		// error, not a removal (T11-20): a removal would plan a POST that
 		// 409s, and failing loudly on an unknown shape is the contract.
-		diags.AddError("Aether API returned an unreadable registry",
+		diags.AddError("Norkeel API returned an unreadable registry",
 			fmt.Sprintf("GET %s answered enabled=true without a registry id.", g.HTTPResponse.Request.URL))
 		return nil, false, diags
 	}

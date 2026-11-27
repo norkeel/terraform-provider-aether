@@ -876,7 +876,7 @@ func TestClusterResource_PinningBelowTheStoredVersionNeverYieldsAnInconsistentRe
 		Steps: []resource.TestStep{
 			{Config: clusterCfg("1.37"), Check: resource.TestCheckResourceAttr(clusterResource, "observed_kubernetes_version", "1.37.2")},
 			{
-				// e.g. an upgrade to 1.37.4 started from the portal: the row still reads running
+				// e.g. an upgrade to 1.37.4 started from the Bridge: the row still reads running
 				PreConfig: func() { api.SetLatestPatch("1.37", 4); api.SetStoredVersionAhead("*", "1.37.4") },
 				Config:    clusterCfg("1.37.2"),
 				// Tight positive wording: "Provider produced inconsistent result" contains none of it.

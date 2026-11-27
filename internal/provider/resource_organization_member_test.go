@@ -935,7 +935,7 @@ func TestMemberResource_ImportWithAMalformedIDIsRefusedWithZeroMemberCalls(t *te
 // Fails if the API's 409 last_owner on the DELETE is swallowed, reported under
 // another summary, or drops the membership from state. Scenario: the
 // provider's guard lists the members and sees a second owner, and that owner
-// is removed (in the portal, or by another run) before the DELETE arrives -
+// is removed (in the Bridge, or by another run) before the DELETE arrives -
 // the case the provider guard cannot reach and the API refuses. The handler
 // below serves the guard's list with both owners and removes the second one
 // from the fake as it answers. Exactly one DELETE proves the refusal came
@@ -1018,7 +1018,7 @@ func TestMemberResource_CaseVariantOfAnExistingMemberSurfacesThe409AndSavesNothi
 }
 
 // Fails if a 403 insufficient_role on a write is reported with the generic
-// "Aether API rejected the request ... Check api_token" diagnostic (the token
+// "Norkeel API rejected the request ... Check api_token" diagnostic (the token
 // was accepted; its organization role is what is short), or without the
 // API's message. ExpectError cannot assert an absence, so the step's error is
 // inspected by the case's ErrorCheck instead.
@@ -1041,10 +1041,10 @@ func TestMemberResource_InsufficientRoleOnAWriteSurfacesTheRoleDiagnosticNotTheT
 	msg := got.Error()
 	if re := summaryThenDetail("The API token's organization role does not allow this operation",
 		"Your role in this organization does not permit this action",
-		"Use an API token with the Admin role (Settings → API Tokens); changing a member's role is open to no token and must be done in the portal, signed in as an organization owner."); !re.MatchString(msg) {
+		"Use an API token with the Admin role (Settings → API Tokens); changing a member's role is open to no token and must be done in the Bridge, signed in as an organization owner."); !re.MatchString(msg) {
 		t.Fatalf("error lacks the role diagnostic (%s):\n%s", re, msg)
 	}
-	for _, generic := range []string{"api_token", "Aether API rejected the request"} {
+	for _, generic := range []string{"api_token", "Norkeel API rejected the request"} {
 		if strings.Contains(msg, generic) {
 			t.Fatalf("error carries the generic token diagnostic %q:\n%s", generic, msg)
 		}

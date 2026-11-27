@@ -77,7 +77,7 @@ func (r *organizationResource) Schema(_ context.Context, _ resource.SchemaReques
 			"name": managedString("Display name of the organization. Must not be empty.",
 				stringvalidator.LengthAtLeast(1)),
 			"slug": managedString("URL-safe organization identifier (3-63 characters: lower-case letters, digits and hyphens, not starting or ending with a hyphen). "+
-				"It cannot be changed through Terraform: registry projects, storage billing and quota are keyed on it, and a rename would strand them for existing clusters (aether-api #303). Rename in the portal instead.",
+				"It cannot be changed through Terraform: registry projects, storage billing and quota are keyed on it, and a rename would strand them for existing clusters (aether-api #303). Rename in the Bridge instead.",
 				stringvalidator.RegexMatches(slugPattern, "must be 3-63 characters of lower-case letters, digits and hyphens, not starting or ending with a hyphen")),
 			"billing_email": managedString("Address invoices are sent to. `\"\"` clears it.", billingEmailValidator{}),
 			"vat_id":        managedString("VAT identification number. `\"\"` clears it."),
@@ -137,7 +137,7 @@ func (r *organizationResource) ModifyPlan(ctx context.Context, req resource.Modi
 	if configSlug.ValueString() != stateSlug.ValueString() {
 		resp.Diagnostics.AddAttributeError(path.Root("slug"), "The organization slug cannot be changed",
 			fmt.Sprintf("Changing the slug from %q to %q is refused: registry images, storage billing and quota of existing clusters stay keyed on the old slug and would be stranded (aether-api #303). "+
-				"Rename the organization in the portal, or restore slug = %q.", stateSlug.ValueString(), configSlug.ValueString(), stateSlug.ValueString()))
+				"Rename the organization in the Bridge, or restore slug = %q.", stateSlug.ValueString(), configSlug.ValueString(), stateSlug.ValueString()))
 	}
 }
 
@@ -175,7 +175,7 @@ func (r *organizationResource) Read(ctx context.Context, req resource.ReadReques
 		addAPIError(&resp.Diagnostics, g.StatusCode(), g.HTTPResponse.Header, g.Body, path.Empty())
 		return
 	case g.JSON200 == nil:
-		resp.Diagnostics.AddError("Aether API returned no usable organization", describeNonJSON(g.HTTPResponse, g.Status()))
+		resp.Diagnostics.AddError("Norkeel API returned no usable organization", describeNonJSON(g.HTTPResponse, g.Status()))
 		return
 	}
 	flattenOrganization(g.JSON200, &state)
@@ -216,7 +216,7 @@ func (r *organizationResource) Update(ctx context.Context, req resource.UpdateRe
 			return
 		}
 		if g.JSON200 == nil {
-			resp.Diagnostics.AddError("Aether API returned no usable organization", describeNonJSON(g.HTTPResponse, g.Status()))
+			resp.Diagnostics.AddError("Norkeel API returned no usable organization", describeNonJSON(g.HTTPResponse, g.Status()))
 			return
 		}
 		flattenOrganization(g.JSON200, &plan)
@@ -234,7 +234,7 @@ func (r *organizationResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 	if res.JSON200 == nil {
-		resp.Diagnostics.AddError("Aether API accepted the organization update but returned no usable body",
+		resp.Diagnostics.AddError("Norkeel API accepted the organization update but returned no usable body",
 			describeNonJSON(res.HTTPResponse, res.Status())+". The change was probably written, but state still holds the previous values: apply again (the PUT is idempotent).")
 		return
 	}

@@ -154,7 +154,7 @@ func (d *registryRepositoryTagsDataSource) Read(ctx context.Context, req datasou
 		}
 		for _, it := range items {
 			if it.Digest == "" {
-				diags.AddError("Aether API returned no usable registry list", describeJSONWithout(hr, hr.Status, "tag digest"))
+				diags.AddError("Norkeel API returned no usable registry list", describeJSONWithout(hr, hr.Status, "tag digest"))
 				return nil, "", pageFailure(diags)
 			}
 		}

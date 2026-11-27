@@ -354,7 +354,7 @@ func (r *nodePoolResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 		return
 	}
 	resp.Diagnostics.AddAttributeError(path.Root("drain_timeout_seconds"), "drain_timeout_seconds cannot be removed",
-		fmt.Sprintf("drain_timeout_seconds is set to %d on this pool, and the Aether API has no way to clear it back to the platform default (currently 600 seconds). "+
+		fmt.Sprintf("drain_timeout_seconds is set to %d on this pool, and the Norkeel API has no way to clear it back to the platform default (currently 600 seconds). "+
 			"Keep an explicit value instead, or recreate the pool: taint it first - `terraform taint <this resource address>` (or `tofu taint <this resource address>`) - "+
 			"then apply with the attribute removed; a tainted object is planned with no prior state, so this refusal does not fire on that apply. "+
 			"`terraform apply -replace=<address>` and `lifecycle { replace_triggered_by = [...] }` do NOT work here: Terraform plans the forced replacement only after a first "+
@@ -444,8 +444,8 @@ func (r *nodePoolResource) Create(ctx context.Context, req resource.CreateReques
 	// really created. Failing here leaves no state entry at all.
 	created := res.JSON202
 	if created == nil {
-		resp.Diagnostics.AddError("Aether API accepted the node pool but returned no usable body",
-			describeNonJSON(res.HTTPResponse, res.Status())+". The pool may exist; check the portal before retrying, since a retry with the same name is refused while it exists.")
+		resp.Diagnostics.AddError("Norkeel API accepted the node pool but returned no usable body",
+			describeNonJSON(res.HTTPResponse, res.Status())+". The pool may exist; check the Bridge before retrying, since a retry with the same name is refused while it exists.")
 		return
 	}
 	// Persist the id immediately, with the create response flattened in, so a

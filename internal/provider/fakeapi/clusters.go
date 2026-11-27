@@ -231,7 +231,7 @@ func (s *Server) SeedManyClusters(org string, n int) []string {
 }
 
 // SetStoredVersionAhead puts the cluster in the state a rollout leaves behind
-// (started from the portal, or ended `failed`): the API-stored k8s_version
+// (started from the Bridge, or ended `failed`): the API-stored k8s_version
 // becomes `stored` while observed_kubernetes_version and status are untouched
 // (status still follows StatusSequence). If observed was never reported it is
 // pinned to the version the cluster stored before, as a running cluster would

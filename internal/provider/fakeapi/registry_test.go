@@ -708,13 +708,13 @@ func TestCleanupUpdatedAtMovesOnPut(t *testing.T) {
 
 // Fails if conditions are not stored/returned verbatim across every JSON
 // value shape the engine (and other clients) can leave behind: a numeric
-// value, a bool value, and the fail-open portal shape with no op/value at
+// value, a bool value, and the fail-open Bridge shape with no op/value at
 // all (§9 U3).
 func TestCleanupConditionsRoundTripEveryValueShape(t *testing.T) {
 	s := newClusterFake(t)
 	id := s.SeedPolicy(testOrg, "p", "delete", []map[string]any{
 		{"type": "tag_count", "op": "gt", "value": float64(10)},
-		{"type": "untagged"}, // portal's fail-open shape: no op, no value
+		{"type": "untagged"}, // the Bridge's fail-open shape: no op, no value
 		{"type": "tag_name", "op": "eq", "value": "latest"},
 	}, []string{}, "nightly", true)
 
@@ -739,7 +739,7 @@ func TestCleanupConditionsRoundTripEveryValueShape(t *testing.T) {
 	}
 	c1 := conds[1].(map[string]any)
 	if _, has := c1["op"]; has {
-		t.Fatalf("conditions[1] = %v, want no \"op\" key (the portal's fail-open shape)", c1)
+		t.Fatalf("conditions[1] = %v, want no \"op\" key (the Bridge's fail-open shape)", c1)
 	}
 	if _, has := c1["value"]; has {
 		t.Fatalf("conditions[1] = %v, want no \"value\" key", c1)
